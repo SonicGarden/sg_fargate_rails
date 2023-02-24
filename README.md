@@ -7,7 +7,7 @@ Railsアプリを AWS Fargate で動かすためのライブラリ。
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'sg_fargate_rails'
+gem 'sg_fargate_rails', git: 'https://github.com/SonicGarden/sg_fargate_rails.git'
 ```
 ## Contributing
 
