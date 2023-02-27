@@ -1,5 +1,9 @@
 ## [Unreleased]
 
-## [0.1.0] - 2023-02-24
+## [0.1.1](https://github.com/SonicGarden/sg_fargate_rails/compare/v0.1.0...v0.1.1)
 
-- Initial release
+- healthcheckの仕組み導入
+
+## [0.1.0]
+
+- foreman とlograge を自動で読み込むように
