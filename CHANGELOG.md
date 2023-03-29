@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.2](https://github.com/SonicGarden/sg_fargate_rails/compare/v0.1.1...v0.1.2)
+
+- HTTP_X_FORWARDED_PROTOを調整する仕組みを導入(cloudfront対応)
+
 ## [0.1.1](https://github.com/SonicGarden/sg_fargate_rails/compare/v0.1.0...v0.1.1)
 
 - healthcheckの仕組み導入
