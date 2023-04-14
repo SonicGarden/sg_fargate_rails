@@ -39,4 +39,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'foreman', '~> 0.87'
   spec.add_dependency 'lograge', '~> 0.12'
+  spec.add_dependency 'rack-attack', '~> 6.6'
 end

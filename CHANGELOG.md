@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.3](https://github.com/SonicGarden/sg_fargate_rails/compare/v0.1.2...v0.1.3)
+
+- アクセス元IPアドレスの制限を入れる仕組みを追加
+
 ## [0.1.2](https://github.com/SonicGarden/sg_fargate_rails/compare/v0.1.1...v0.1.2)
 
 - HTTP_X_FORWARDED_PROTOを調整する仕組みを導入(cloudfront対応)
