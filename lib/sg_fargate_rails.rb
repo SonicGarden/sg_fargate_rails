@@ -15,7 +15,7 @@ module SgFargateRails
 
   class << self
     def config
-      @config ||= Config
+      @config ||= Config.new
     end
 
     def configure
