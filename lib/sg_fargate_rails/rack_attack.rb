@@ -1,4 +1,4 @@
-require 'rack-attack'
+require 'rack/attack'
 
 module SgFargateRails
   class RackAttack
