@@ -8,6 +8,7 @@ module SgFargateRails
           proxy_ip_addr = SgFargateRails.config.proxy_ip_address
           return false unless proxy_ip_addr
 
+          p ['DEBUG', 'req.env[remote_addr]', req.env['REMOTE_ADDR'], 'req.ip=', req.ip]
           ip_retricted_path?(req.path) && proxy_ip_addr != req.ip
         end
       end
