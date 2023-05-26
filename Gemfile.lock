@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sg_fargate_rails (0.1.0)
+    sg_fargate_rails (0.1.2)
       foreman (~> 0.87)
       lograge (~> 0.12)
 
@@ -45,8 +45,12 @@ GEM
     minitest (5.17.0)
     nokogiri (1.14.2-arm64-darwin)
       racc (~> 1.4)
+    nokogiri (1.14.2-x86_64-linux)
+      racc (~> 1.4)
     racc (1.6.2)
     rack (2.2.6.2)
+    rack-attack (6.6.1)
+      rack (>= 1.0, < 3)
     rack-test (2.0.2)
       rack (>= 1.3)
     rails-dom-testing (2.0.3)
@@ -71,10 +75,12 @@ GEM
 
 PLATFORMS
   arm64-darwin-22
+  x86_64-linux
 
 DEPENDENCIES
+  rack-attack (~> 6.6)
   rake (~> 13.0)
   sg_fargate_rails!
 
 BUNDLED WITH
-   2.4.1
+   2.4.8
