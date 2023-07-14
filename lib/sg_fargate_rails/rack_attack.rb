@@ -6,7 +6,7 @@ module SgFargateRails
       def setup
         Rack::Attack.blocklist('allow only from proxy') do |req|
           proxy_ip_addr = SgFargateRails.config.proxy_ip_address
-          return false unless proxy_ip_addr
+          next false unless proxy_ip_addr
 
           ip_retricted_path?(req.path) && !access_from?(req, proxy_ip_addr)
         end
