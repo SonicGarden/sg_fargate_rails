@@ -37,7 +37,7 @@ Gem::Specification.new do |spec|
   # For more information and examples about making a new gem, checkout our
   # guide at: https://bundler.io/guides/creating_gem.html
 
-  spec.add_dependency 'foreman', '~> 0.87'
+  spec.add_dependency 'puma'
   spec.add_dependency 'lograge', '~> 0.12'
   spec.add_dependency 'rack-attack', '~> 6.6'
 end
