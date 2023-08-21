@@ -8,7 +8,7 @@ module SgFargateRails
     end
 
     def call(env)
-      if maintenance_mode?
+      if maintenance_mode?(env)
         headers = { 'Content-Type' => 'text/html' }
         [503, headers, File.open(maintenance_file_path)]
       else
@@ -18,8 +18,8 @@ module SgFargateRails
 
     private
 
-    def maintenance_mode?
-      env['HTTP_X_SG_FARGATE_RAILS_MAINTENANCE'] == 'true'
+    def maintenance_mode?(env)
+      env['HTTP_X_SG_FARGATE_RAILS_MAINTENANCE'].present?
     end
 
     def maintenance_file_path

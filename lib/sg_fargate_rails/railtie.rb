@@ -11,6 +11,7 @@ module SgFargateRails
 
         app.config.middleware.insert 0, SgFargateRails::AdjustCloudfrontHeaders
         app.config.middleware.insert 1, SgFargateRails::Healthcheck
+        app.config.middleware.insert 2, SgFargateRails::Maintenance
       end
     end
   end
