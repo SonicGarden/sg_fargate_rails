@@ -1,5 +1,6 @@
 require 'sg_fargate_rails/adjust_cloudfront_headers'
 require 'sg_fargate_rails/healthcheck'
+require 'sg_fargate_rails/maintenance'
 require 'sg_fargate_rails/rack_attack'
 
 module SgFargateRails
