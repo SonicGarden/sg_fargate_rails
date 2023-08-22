@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+## [0.1.4](https://github.com/SonicGarden/sg_fargate_rails/compare/v0.1.3...v0.1.4)
+
+- メンテナンスモードの仕組みを追加
+- foreman依存の削減
+- puma依存の追加
+
 ## [0.1.3](https://github.com/SonicGarden/sg_fargate_rails/compare/v0.1.2...v0.1.3)
 
 - アクセス元IPアドレスの制限を入れる仕組みを追加
