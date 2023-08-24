@@ -4,8 +4,9 @@ module SgFargateRails
   class RackAttack
     class << self
       def setup
-        proxy_ip_addresses_str = SgFargateRails.config.proxy_ip_address || ''
-        proxy_ip_addresses = proxy_ip_addresses_str.split(',').map(&:strip).reject(&:blank?)
+        proxy_ip_addresses = Array(SgFargateRails.config.proxy_ip_addresses).flat_map do |ip_address_str|
+          ip_address_str.split(',').map(&:strip).reject(&:blank?)
+        end
         return if proxy_ip_addresses.empty?
 
         Rack::Attack.blocklist('allow only from proxy') do |req|
