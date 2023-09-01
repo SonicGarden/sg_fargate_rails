@@ -1,5 +1,15 @@
 ## [Unreleased]
 
+## [0.1.5](https://github.com/SonicGarden/sg_fargate_rails/compare/v0.1.4...v0.1.5)
+
+- アクセス元IPアドレスの制限で複数IPアドレスを指定可能に
+
+### Breaking Changes
+
+- アクセス元IPアドレス制限の設定方法が変更されています。
+    - 環境変数を使用する場合: `SG_PROXY_IP_ADDRESS` → `SG_PROXY_IP_ADDRESSES`
+    - コードで設定する場合: `config.proxy_ip_address` → `config.proxy_ip_addresses`
+
 ## [0.1.4](https://github.com/SonicGarden/sg_fargate_rails/compare/v0.1.3...v0.1.4)
 
 - メンテナンスモードの仕組みを追加
