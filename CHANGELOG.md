@@ -2,7 +2,7 @@
 
 ## [0.1.6](https://github.com/SonicGarden/sg_fargate_rails/compare/v0.1.5...v0.1.6)
 
-- メンテナンスモード時に public ディレクトリ配下のコンテンツはrackで返すように
+- メンテナンスモード時でも public ディレクトリ配下のコンテンツは配信するように
 
 ## [0.1.5](https://github.com/SonicGarden/sg_fargate_rails/compare/v0.1.4...v0.1.5)
 
