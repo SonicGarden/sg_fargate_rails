@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.6](https://github.com/SonicGarden/sg_fargate_rails/compare/v0.1.5...v0.1.6)
+
+- メンテナンスモード時に public ディレクトリ配下のコンテンツはrackで返すように
+
 ## [0.1.5](https://github.com/SonicGarden/sg_fargate_rails/compare/v0.1.4...v0.1.5)
 
 - アクセス元IPアドレスの制限で複数IPアドレスを指定可能に
