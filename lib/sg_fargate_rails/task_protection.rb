@@ -39,29 +39,32 @@ module SgFargateRails
 
       private
 
-      def ecs_agent_uri
-        ENV['ECS_AGENT_URI']
-      end
-
-      def http
-        @http ||= begin
-                    uri = URI(ecs_agent_uri)
-                    http = Net::HTTP.new(uri.host, uri.port)
-                    http.use_ssl = uri.scheme == 'https'
-                    http
-                  end
+      def ecs_agent_uri(path)
+        URI(%(#{ENV['ECS_AGENT_URI']}#{path}))
       end
 
       def update_task_protection_state(enabled:)
-        req = Net::HTTP::Put.new('/task-protection/v1/state')
+        uri = ecs_agent_uri('/task-protection/v1/state')
+        req = Net::HTTP::Put.new(uri.path)
         req.add_field('Content-Type', 'application/json')
         req.body = { 'ProtectionEnabled' => enabled }.to_json
-        res = http.request(req)
-        code = res.code.to_i
+
+        code, body = send_http_request(uri, req)
         if code == 200
           Rails.logger.info "[SgFargateRails::TaskProtection] succeeded; enabled=#{enabled}"
         else
-          Rails.logger.info "[SgFargateRails::TaskProtection] failed; enabled=#{enabled}, code=#{code}, res=#{res.body}"
+          Rails.logger.info "[SgFargateRails::TaskProtection] failed; enabled=#{enabled}, code=#{code}, res=#{body}"
+        end
+      end
+
+      def send_http_request(uri, request)
+        if Rails.env.test? || Rails.env.development?
+          [200, nil]
+        else
+          http = Net::HTTP.new(uri.host, uri.port)
+          http.use_ssl = uri.scheme == 'https'
+          res = http.request(request)
+          [res.code.to_i, res.body]
         end
       end
     end
