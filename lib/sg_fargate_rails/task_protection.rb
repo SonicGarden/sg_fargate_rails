@@ -71,9 +71,9 @@ module SgFargateRails
 
     module Job
       def self.included(mod)
-        mod.around_perform do
-          TaskProtection.with_task_protection do
-            yield
+        mod.class_eval do
+          around_perform do |_job, block|
+            TaskProtection.with_task_protection(&block)
           end
         end
       end
