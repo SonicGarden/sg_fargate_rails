@@ -5,6 +5,10 @@ require 'sg_fargate_rails/rack_attack'
 
 module SgFargateRails
   class Railtie < ::Rails::Railtie
+    rake_tasks do
+      load File.expand_path('../tasks/sg_fargate_rails.rake', __dir__)
+    end
+
     initializer :initialize_sg_fargate_rails do |app|
       unless ::Rails.env.in?(%w[development test])
         SgFargateRails::RackAttack.setup

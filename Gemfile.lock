@@ -1,7 +1,8 @@
 PATH
   remote: .
   specs:
-    sg_fargate_rails (0.1.5)
+    sg_fargate_rails (0.1.6)
+      aws-sdk-ec2 (~> 1.413)
       lograge (~> 0.12)
       puma
       rack-attack (~> 6.6)
@@ -27,12 +28,28 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
+    aws-eventstream (1.2.0)
+    aws-partitions (1.835.0)
+    aws-sdk-core (3.185.1)
+      aws-eventstream (~> 1, >= 1.0.2)
+      aws-partitions (~> 1, >= 1.651.0)
+      aws-sigv4 (~> 1.5)
+      jmespath (~> 1, >= 1.6.1)
+    aws-sdk-ec2 (1.413.0)
+      aws-sdk-core (~> 3, >= 3.184.0)
+      aws-sigv4 (~> 1.1)
+    aws-sdk-scheduler (1.10.0)
+      aws-sdk-core (~> 3, >= 3.184.0)
+      aws-sigv4 (~> 1.1)
+    aws-sigv4 (1.6.0)
+      aws-eventstream (~> 1, >= 1.0.2)
     builder (3.2.4)
     concurrent-ruby (1.2.0)
     crass (1.0.6)
     erubi (1.12.0)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
+    jmespath (1.6.2)
     lograge (0.12.0)
       actionpack (>= 4)
       activesupport (>= 4)
@@ -81,6 +98,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  aws-sdk-scheduler (~> 1.10)
   rake (~> 13.0)
   sg_fargate_rails!
 
