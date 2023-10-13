@@ -8,10 +8,6 @@ module SgFargateRails
       metadata[:Cluster]
     end
 
-    def account_id
-      cluster_arn.split(':')[4]
-    end
-
     def task_definition_arn
       "#{cluster_arn.split(":cluster/")[0]}:task-definition/#{metadata[:Family]}:#{metadata[:Revision]}"
     end
@@ -21,37 +17,11 @@ module SgFargateRails
     end
 
     def security_group_ids
-      security_group_params = {
-        filters: [
-          {
-            name: 'tag:aws:cloudformation:logical-id',
-            values: ['EnvironmentSecurityGroup'],
-          },
-          {
-            name: 'tag:aws:cloudformation:stack-name',
-            values: [cfn_stack_name],
-          }
-        ],
-      }
-      resp = ec2_client.describe_security_groups(security_group_params)
-      resp.to_h[:security_groups].map { |group| group[:group_id] }
+      @security_group_ids ||= fetch_security_group_ids
     end
 
     def public_subnet_ids
-      subnet_params = {
-        filters: [
-          {
-            name: 'tag:aws:cloudformation:logical-id',
-            values: %w[PublicSubnet1 PublicSubnet2],
-          },
-          {
-            name: 'tag:aws:cloudformation:stack-name',
-            values: [cfn_stack_name],
-          },
-        ],
-      }
-      resp = ec2_client.describe_subnets(subnet_params)
-      resp.to_h[:subnets].map { |subnet| subnet[:subnet_id] }
+      @public_subnet_ids ||= fetch_public_subnet_ids
     end
 
     private
@@ -73,6 +43,40 @@ module SgFargateRails
 
     def credentials
       @credentials ||= Aws::ECSCredentials.new(retries: 3)
+    end
+
+    def fetch_security_group_ids
+      security_group_params = {
+        filters: [
+          {
+            name: 'tag:aws:cloudformation:logical-id',
+            values: ['EnvironmentSecurityGroup'],
+          },
+          {
+            name: 'tag:aws:cloudformation:stack-name',
+            values: [cfn_stack_name],
+          }
+        ],
+      }
+      resp = ec2_client.describe_security_groups(security_group_params)
+      resp.to_h[:security_groups].map { |group| group[:group_id] }
+    end
+
+    def fetch_public_subnet_ids
+      subnet_params = {
+        filters: [
+          {
+            name: 'tag:aws:cloudformation:logical-id',
+            values: %w[PublicSubnet1 PublicSubnet2],
+          },
+          {
+            name: 'tag:aws:cloudformation:stack-name',
+            values: [cfn_stack_name],
+          },
+        ],
+      }
+      resp = ec2_client.describe_subnets(subnet_params)
+      resp.to_h[:subnets].map { |subnet| subnet[:subnet_id] }
     end
   end
 end
