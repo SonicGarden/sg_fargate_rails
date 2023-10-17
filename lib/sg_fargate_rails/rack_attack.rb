@@ -4,13 +4,10 @@ module SgFargateRails
   class RackAttack
     class << self
       def setup
-        proxy_ip_addresses = Array(SgFargateRails.config.proxy_ip_addresses).flat_map do |ip_address_str|
-          ip_address_str.split(',').map(&:strip).reject(&:blank?)
-        end
-        return if proxy_ip_addresses.empty?
+        return if SgFargateRails.config.proxy_ip_addresses.empty?
 
         Rack::Attack.blocklist('allow only from proxy') do |req|
-          ip_retricted_path?(req.path) && !access_from?(req, proxy_ip_addresses)
+          ip_retricted_path?(req.path) && !proxy_access?(req)
         end
       end
 
@@ -19,10 +16,8 @@ module SgFargateRails
         rectricted_paths.any? { path.match?(/^#{_1}/) }
       end
 
-      def access_from?(req, proxy_ip_addresses)
-        proxy_ip_addresses.any? do |proxy_ip_address|
-          req.ip == proxy_ip_address || req.forwarded_for&.include?(proxy_ip_address)
-        end
+      def proxy_access?(req)
+        SgFargateRails.config.proxy_access?(req.ip) || req.forwarded_for&.any? { |forwarded_for| SgFargateRails.config.proxy_access?(forwarded_for) }
       end
     end
   end
