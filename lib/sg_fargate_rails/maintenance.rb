@@ -9,7 +9,7 @@ module SgFargateRails
     end
 
     def call(env)
-      if maintenance_mode?(env) && !public_file_access?(env)
+      if maintenance_mode?(env) && !public_file_access?(env) && !proxy_access?(Rack::Request.new(env))
         headers = { 'Content-Type' => 'text/html' }
         [503, headers, File.open(maintenance_file_path)]
       else
@@ -35,6 +35,10 @@ module SgFargateRails
 
     def maintenance_file_path
       Rails.public_path.join('503.html')
+    end
+
+    def proxy_access?(req)
+      SgFargateRails.config.proxy_access?(req.ip) || req.forwarded_for&.any? { |forwarded_for| SgFargateRails.config.proxy_access?(forwarded_for) }
     end
   end
 end
