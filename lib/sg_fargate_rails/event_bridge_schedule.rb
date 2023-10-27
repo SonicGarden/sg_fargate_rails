@@ -4,10 +4,12 @@ module SgFargateRails
   class EventBridgeSchedule
     attr_reader :name
 
-    def initialize(name, cron, command)
+    def initialize(name, cron, command, cpu, memory)
       @name = name
       @cron = cron
       @command = command
+      @cpu = cpu
+      @memory = memory
     end
 
     def create_run_task(group_name:, cluster_arn:, task_definition_arn:, network_configuration:)
@@ -26,14 +28,7 @@ module SgFargateRails
             launch_type: 'FARGATE',
             network_configuration: network_configuration
           },
-          input: {
-            "containerOverrides": [
-              {
-                "name": "rails",
-                "command": container_command,
-              }
-            ]
-          }.to_json,
+          input: input_overrides_json,
           retry_policy: {
             maximum_event_age_in_seconds: 120,
             maximum_retry_attempts: 2,
@@ -42,6 +37,32 @@ module SgFargateRails
         },
       }
       client.create_schedule(params)
+    end
+
+    def input_overrides_json
+      if @cpu && @memory
+        {
+          "cpu": "#{@cpu}",
+          "memory": "#{@memory}",
+          "containerOverrides": [
+            {
+              "name": "rails",
+              "cpu": "#{@cpu}",
+              "memory": "#{@memory}",
+              "command": container_command,
+            }
+          ]
+        }.to_json
+      else
+        {
+          "containerOverrides": [
+            {
+              "name": "rails",
+              "command": container_command,
+            }
+          ]
+        }.to_json
+      end
     end
 
     def container_command
@@ -66,7 +87,7 @@ module SgFargateRails
     class << self
       def parse(filename)
         schedules = YAML.load(File.open(filename))
-        schedules.map { |name, info| EventBridgeSchedule.new(name, info['cron'], info['command']) }
+        schedules.map { |name, info| EventBridgeSchedule.new(name, info['cron'], info['command'], info['cpu'], info['memory']) }
       end
 
       def delete_all!(group_name)
