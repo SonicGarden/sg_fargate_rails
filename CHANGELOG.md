@@ -1,4 +1,4 @@
-## [Unreleased]
+## リリース内容は [Releases](https://github.com/SonicGarden/sg_fargate_rails/releases) に移動しました
 
 ## [0.1.6](https://github.com/SonicGarden/sg_fargate_rails/compare/v0.1.5...v0.1.6)
 
