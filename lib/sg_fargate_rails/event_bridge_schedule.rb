@@ -94,8 +94,8 @@ module SgFargateRails
 
     class << self
       def parse(filename)
-        schedules = YAML.load(File.open(filename))
-        schedules.map { |name, info| EventBridgeSchedule.new(name, info['cron'], info['command'], info['container_type']) }
+        schedules = YAML.load(File.open(filename))[environment]
+        schedules.map { |name, info| EventBridgeSchedule.new(name, info['cron'], info['command'], info['container_type']) if name != '<<' }
       end
 
       def delete_all!(group_name)
@@ -107,6 +107,10 @@ module SgFargateRails
 
       def client
         @client ||= Aws::Scheduler::Client.new(region: region, credentials: credentials)
+      end
+
+      def environment
+        ENV['RAILS_ENV']
       end
 
       def region
