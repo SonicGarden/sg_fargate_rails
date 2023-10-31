@@ -2,14 +2,19 @@ require "aws-sdk-scheduler"
 
 module SgFargateRails
   class EventBridgeSchedule
+    CONTAINER_TYPES = {
+      'small' => { cpu: '512', memory: '1024', },
+      'medium' => { cpu: '1024', memory: '2048', },
+      'large' => { cpu: '2048', memory: '4096', },
+    }.freeze
+
     attr_reader :name
 
-    def initialize(name, cron, command, cpu, memory)
+    def initialize(name, cron, command, container_type)
       @name = name
       @cron = cron
       @command = command
-      @cpu = cpu
-      @memory = memory
+      @container_type = container_type
     end
 
     def create_run_task(group_name:, cluster_arn:, task_definition_arn:, network_configuration:)
@@ -40,15 +45,14 @@ module SgFargateRails
     end
 
     def input_overrides_json
-      if @cpu && @memory
+      type = convert_container_type
+      if type
         {
-          "cpu": "#{@cpu}",
-          "memory": "#{@memory}",
+          **type,
           "containerOverrides": [
             {
               "name": "rails",
-              "cpu": "#{@cpu}",
-              "memory": "#{@memory}",
+              **type,
               "command": container_command,
             }
           ]
@@ -63,6 +67,10 @@ module SgFargateRails
           ]
         }.to_json
       end
+    end
+
+    def convert_container_type
+      CONTAINER_TYPES[@container_type]
     end
 
     def container_command
@@ -87,7 +95,7 @@ module SgFargateRails
     class << self
       def parse(filename)
         schedules = YAML.load(File.open(filename))
-        schedules.map { |name, info| EventBridgeSchedule.new(name, info['cron'], info['command'], info['cpu'], info['memory']) }
+        schedules.map { |name, info| EventBridgeSchedule.new(name, info['cron'], info['command'], info['container_type']) }
       end
 
       def delete_all!(group_name)
