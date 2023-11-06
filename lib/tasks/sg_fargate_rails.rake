@@ -14,8 +14,6 @@ namespace :sg_fargate_rails do
     Rails.logger.info "[EventBridgeSchedule] Register schedules in #{group_name}"
     config_file = Rails.root.join('config/eventbridge_schedules.yml')
     SgFargateRails::EventBridgeSchedule.parse(config_file).each do |schedule|
-      next if schedule.nil?
-
       Rails.logger.info "[EventBridgeSchedule] Register schedule #{schedule.name} in #{group_name}"
       # TODO: この辺で AWS の API Limit などのエラーが発生するとスケジュールが消えたままとなるので、エラーの内容に応じてリトライなどのエラー処理が必要
       schedule.create_run_task(
