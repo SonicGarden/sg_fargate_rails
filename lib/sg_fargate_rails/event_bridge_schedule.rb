@@ -95,7 +95,7 @@ module SgFargateRails
     class << self
       def parse(filename)
         schedules = YAML.unsafe_load(File.open(filename))[environment]
-        schedules.map { |name, info| EventBridgeSchedule.new(name, info['cron'], info['command'], info['container_type']) if name != '<<' }
+        schedules.filter_map { |name, info| EventBridgeSchedule.new(name, info['cron'], info['command'], info['container_type']) if name != '<<' }
       end
 
       def delete_all!(group_name)

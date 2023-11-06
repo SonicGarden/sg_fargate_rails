@@ -56,7 +56,7 @@ describe SgFargateRails::EventBridgeSchedule do
         allow(ENV).to receive(:[]).and_call_original
         allow(ENV).to receive(:[]).with('RAILS_ENV').and_return('staging')
 
-        expect(SgFargateRails::EventBridgeSchedule.parse(filename)).to eq [nil]
+        expect(SgFargateRails::EventBridgeSchedule.parse(filename)).to eq []
       end
     end
 
