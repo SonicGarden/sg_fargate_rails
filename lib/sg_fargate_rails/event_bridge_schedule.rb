@@ -70,7 +70,7 @@ module SgFargateRails
     end
 
     def convert_container_type
-      CONTAINER_TYPES.fetch(@container_type)
+      @container_type ? CONTAINER_TYPES.fetch(@container_type) : nil
     end
 
     def container_command
