@@ -3,6 +3,7 @@ require 'sg_fargate_rails/healthcheck'
 require 'sg_fargate_rails/maintenance'
 require 'sg_fargate_rails/rack_attack'
 require 'sg_fargate_rails/remote_ip'
+require 'sg_fargate_rails/task_protection'
 
 module SgFargateRails
   class Railtie < ::Rails::Railtie
