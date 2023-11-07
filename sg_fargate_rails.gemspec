@@ -38,7 +38,6 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'puma'
   spec.add_dependency 'lograge', '~> 0.12'
-  spec.add_dependency 'rack-attack', '~> 6.6'
   spec.add_dependency 'aws-sdk-ec2', '~> 1.413'
   spec.add_dependency 'aws-sdk-scheduler', '~> 1.10'
 
