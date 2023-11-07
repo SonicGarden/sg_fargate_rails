@@ -10,7 +10,7 @@ module SgFargateRails
       load File.expand_path('../tasks/sg_fargate_rails.rake', __dir__)
     end
 
-    initializer :initialize_sg_fargate_rails do |app|
+    initializer :initialize_sg_fargate_rails, after: :load_config_initializers do |app|
       if SgFargateRails.config.middleware_enabled_rails_envs.include?(Rails.env)
         app.config.middleware.insert 0, SgFargateRails::AdjustCloudfrontHeaders
         app.config.middleware.insert 1, SgFargateRails::Healthcheck
