@@ -48,15 +48,10 @@ describe SgFargateRails::EventBridgeSchedule do
     end
   end
 
-  describe '#parse' do
+  describe '.convert' do
     context 'scheduleの登録がない場合' do
-      let(:filename) { 'spec/fixtures/event_bridge_schedule/blank_schedule.yml' }
-
       it do
-        allow(ENV).to receive(:[]).and_call_original
-        allow(ENV).to receive(:[]).with('RAILS_ENV').and_return('staging')
-
-        expect(SgFargateRails::EventBridgeSchedule.parse(filename)).to eq []
+        expect(SgFargateRails::EventBridgeSchedule.convert({})).to eq []
       end
     end
 
@@ -64,10 +59,13 @@ describe SgFargateRails::EventBridgeSchedule do
       let(:filename) { 'spec/fixtures/event_bridge_schedule/schedule.yml' }
 
       it do
-        allow(ENV).to receive(:[]).and_call_original
-        allow(ENV).to receive(:[]).with('RAILS_ENV').and_return('staging')
-
-        results = SgFargateRails::EventBridgeSchedule.parse(filename)
+        results = SgFargateRails::EventBridgeSchedule.convert({
+          daily_backup_to_s3: {
+            command: 'jobmon --estimate-time=3000 sg_tiny_backup:backup',
+            cron: 'cron(30 1 * * ? *)',
+            container_type: 'medium',
+          }
+        })
         expect(results.size).to eq 1
         expect(results.first.name).to eq 'daily_backup_to_s3'
       end

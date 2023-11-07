@@ -70,7 +70,7 @@ module SgFargateRails
     end
 
     def convert_container_type
-      CONTAINER_TYPES[@container_type]
+      @container_type ? CONTAINER_TYPES.fetch(@container_type) : nil
     end
 
     def container_command
@@ -93,9 +93,8 @@ module SgFargateRails
     end
 
     class << self
-      def parse(filename)
-        schedules = YAML.unsafe_load(File.open(filename))[environment]
-        schedules.filter_map { |name, info| EventBridgeSchedule.new(name, info['cron'], info['command'], info['container_type']) if name != '<<' }
+      def convert(schedules)
+        schedules.map { |name, info| EventBridgeSchedule.new(name.to_s, info[:cron], info[:command], info[:container_type]) }
       end
 
       def delete_all!(group_name)
@@ -107,10 +106,6 @@ module SgFargateRails
 
       def client
         @client ||= Aws::Scheduler::Client.new(region: region, credentials: credentials)
-      end
-
-      def environment
-        ENV['RAILS_ENV']
       end
 
       def region
