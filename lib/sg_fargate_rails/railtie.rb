@@ -10,12 +10,12 @@ module SgFargateRails
       load File.expand_path('../tasks/sg_fargate_rails.rake', __dir__)
     end
 
-    initializer :initialize_sg_fargate_rails do |app|
-      unless ::Rails.env.in?(%w[development test])
+    initializer :initialize_sg_fargate_rails, after: :load_config_initializers do |app|
+      if SgFargateRails.config.middleware_enabled
         app.config.middleware.insert 0, SgFargateRails::AdjustCloudfrontHeaders
         app.config.middleware.insert 1, SgFargateRails::Healthcheck
-        app.config.middleware.insert 2, SgFargateRails::Maintenance
         app.config.middleware.swap ActionDispatch::RemoteIp, SgFargateRails::RemoteIp, app.config.action_dispatch.ip_spoofing_check, app.config.action_dispatch.trusted_proxies
+        app.config.middleware.insert_after SgFargateRails::RemoteIp, SgFargateRails::Maintenance
       end
 
       ActiveSupport.on_load(:good_job_application_controller) do
