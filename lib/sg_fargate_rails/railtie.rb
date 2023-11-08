@@ -3,6 +3,7 @@ require 'sg_fargate_rails/healthcheck'
 require 'sg_fargate_rails/maintenance'
 require 'sg_fargate_rails/remote_ip'
 require 'sg_fargate_rails/task_protection'
+require 'sg_fargate_rails/blazer_queries_controller'
 
 module SgFargateRails
   class Railtie < ::Rails::Railtie
@@ -25,6 +26,12 @@ module SgFargateRails
           unless SgFargateRails.config.proxy_access?(request.remote_ip)
             render plain: 'Forbidden', status: :forbidden
           end
+        end
+      end
+
+      Rails.application.reloader.to_prepare do
+        if SgFargateRails.config.blazer_extension_enabled
+          Blazer::QueriesController.prepend(SgFargateRails::BlazerQueriesController)
         end
       end
     end
