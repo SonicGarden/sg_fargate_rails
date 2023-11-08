@@ -11,7 +11,7 @@ module SgFargateRails
     end
 
     initializer :initialize_sg_fargate_rails, after: :load_config_initializers do |app|
-      if SgFargateRails.config.middleware_enabled_rails_envs.include?(Rails.env)
+      if SgFargateRails.config.middleware_enabled
         app.config.middleware.insert 0, SgFargateRails::AdjustCloudfrontHeaders
         app.config.middleware.insert 1, SgFargateRails::Healthcheck
         app.config.middleware.swap ActionDispatch::RemoteIp, SgFargateRails::RemoteIp, app.config.action_dispatch.ip_spoofing_check, app.config.action_dispatch.trusted_proxies
