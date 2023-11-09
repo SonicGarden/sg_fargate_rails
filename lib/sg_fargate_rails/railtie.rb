@@ -1,4 +1,3 @@
-require 'blazer/plus'
 require 'sg_fargate_rails/adjust_cloudfront_headers'
 require 'sg_fargate_rails/healthcheck'
 require 'sg_fargate_rails/maintenance'
@@ -19,7 +18,13 @@ module SgFargateRails
         app.config.middleware.insert_after SgFargateRails::RemoteIp, SgFargateRails::Maintenance
       end
 
-      Blazer::Plus.blazer_danger_actionable_method ||= ->(blazer_user) { blazer_user.email.ends_with?('@sonicgarden.jp') }
+      if defined?(::Blazer)
+        unless defined?(::Blazer::Plus)
+          raise SgFargateRails::Error, 'Please install blazer-plus gem.'
+        end
+
+        Blazer::Plus.blazer_danger_actionable_method ||= ->(blazer_user) { blazer_user.email.ends_with?('@sonicgarden.jp') }
+      end
 
       ActiveSupport.on_load(:good_job_application_controller) do
         before_action :sg_fargate_rails_proxy_access!, if: -> { SgFargateRails.config.restrict_access_to_good_job_dashboard }
