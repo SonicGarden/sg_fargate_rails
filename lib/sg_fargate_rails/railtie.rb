@@ -3,7 +3,6 @@ require 'sg_fargate_rails/healthcheck'
 require 'sg_fargate_rails/maintenance'
 require 'sg_fargate_rails/remote_ip'
 require 'sg_fargate_rails/task_protection'
-require 'sg_fargate_rails/blazer_queries_controller'
 
 module SgFargateRails
   class Railtie < ::Rails::Railtie
@@ -19,6 +18,14 @@ module SgFargateRails
         app.config.middleware.insert_after SgFargateRails::RemoteIp, SgFargateRails::Maintenance
       end
 
+      if defined?(::Blazer)
+        unless defined?(::Blazer::Plus)
+          raise SgFargateRails::Error, 'Please install blazer-plus gem.'
+        end
+
+        Blazer::Plus.blazer_danger_actionable_method ||= ->(blazer_user) { blazer_user.email.ends_with?('@sonicgarden.jp') }
+      end
+
       ActiveSupport.on_load(:good_job_application_controller) do
         before_action :sg_fargate_rails_proxy_access!, if: -> { SgFargateRails.config.restrict_access_to_good_job_dashboard }
 
@@ -26,12 +33,6 @@ module SgFargateRails
           unless SgFargateRails.config.proxy_access?(request.remote_ip)
             render plain: 'Forbidden', status: :forbidden
           end
-        end
-      end
-
-      Rails.application.reloader.to_prepare do
-        if SgFargateRails.config.blazer_extension_enabled
-          Blazer::QueriesController.prepend(SgFargateRails::BlazerQueriesController)
         end
       end
     end
