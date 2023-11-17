@@ -29,4 +29,11 @@ namespace :sg_fargate_rails do
       )
     end
   end
+
+  desc 'Refresh Delayed Cron Jobs'
+  task refresh_delayed_cron_jobs: :environment do
+    Rails.logger.info('[refresh_delayed_cron_jobs] refresh begin...')
+    DelayedCronJobManager.refresh!
+    Rails.logger.info('[refresh_delayed_cron_jobs] refresh end.')
+  end
 end
