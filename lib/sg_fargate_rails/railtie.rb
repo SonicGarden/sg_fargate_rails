@@ -4,6 +4,8 @@ require 'sg_fargate_rails/maintenance'
 require 'sg_fargate_rails/remote_ip'
 require 'sg_fargate_rails/task_protection'
 
+# FIXME: DelayedCronJob が定義されていたら sg_fargate_rails/delayed_cron_job_manager を require する
+
 module SgFargateRails
   class Railtie < ::Rails::Railtie
     rake_tasks do
