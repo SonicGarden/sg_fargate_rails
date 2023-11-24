@@ -1,8 +1,8 @@
 module SgFargateRails
-  class DelayedCronJobManager
+  class DelayedCronJobUtility
     class << self
-      def refresh!
-        DelayedCronJobManager.new.refresh!
+      def refresh_cron_jobs!
+        DelayedCronJobUtility.new.refresh_cron_jobs!
       end
 
       def cron_jobs
@@ -10,7 +10,13 @@ module SgFargateRails
       end
     end
 
-    def refresh!
+    def initialize
+      unless defined?(::DelayedCronJob)
+        raise 'DelayedCronJob not defined.'
+      end
+    end
+
+    def refresh_cron_jobs!
       ActiveRecord::Base.transaction do
         destroy_cron_jobs!
         create_cron_jobs!
@@ -20,7 +26,7 @@ module SgFargateRails
     private
 
       def destroy_cron_jobs!
-        DelayedCronJobManager.cron_jobs.find_each do |delayed_job|
+        DelayedCronJobUtility.cron_jobs.find_each do |delayed_job|
           # NOTE: 念のため cron が設定されていることを再チェック
           if delayed_job.cron.present?
             delayed_job.destroy!
@@ -29,13 +35,9 @@ module SgFargateRails
       end
 
       def create_cron_jobs!
-        cron_settings.each do |options|
+        cron_settings.each do |_name, options|
           job_class = options[:class]
           job_class = options[:class].constantize unless job_class.is_a?(Class)
-
-          unless job_class.is_a?(ActiveJob::Base)
-            raise '対応しているジョブクラスはActiveJobのみです'
-          end
 
           args = options[:args]
           if args.blank?
@@ -45,13 +47,13 @@ module SgFargateRails
           elsif args.is_a?(Hash)
             job_class.set(cron: options[:cron]).perform_later(**args)
           else
-            raise 'args オプションが不正です'
+            raise 'invalid args option.'
           end
         end
       end
 
       def cron_settings
-        [] # WIP: 設定ファイルからロードする
+        @cron_settings ||= Rails.application.config_for('delayed_cron_jobs')
       end
   end
 end
