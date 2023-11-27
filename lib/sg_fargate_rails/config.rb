@@ -1,10 +1,15 @@
 module SgFargateRails
   class Config
-    attr_accessor :paths_to_allow_access_only_from_proxy
     attr_reader :proxy_ip_addresses
+    attr_accessor :middleware_enabled
+
+    # NOTE: good_jobダッシュボードへのアクセスをproxy経由のアクセスに制限するかどうか
+    attr_accessor :restrict_access_to_good_job_dashboard
 
     def initialize
       self.proxy_ip_addresses = ENV['SG_PROXY_IP_ADDRESSES']
+      self.restrict_access_to_good_job_dashboard = Rails.env.production?
+      self.middleware_enabled = !Rails.env.development? && !Rails.env.test?
     end
 
     def proxy_ip_addresses=(ip_addresses)
