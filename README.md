@@ -9,6 +9,13 @@ Add this line to your application's Gemfile:
 ```ruby
 gem 'sg_fargate_rails', git: 'https://github.com/SonicGarden/sg_fargate_rails.git'
 ```
+
+Blazerを利用している場合は、以下のgemをインストールしてください。
+
+```ruby
+gem 'blazer-plus'
+```
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/sg_fargate_rails.
