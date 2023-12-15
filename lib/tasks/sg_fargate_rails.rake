@@ -42,7 +42,18 @@ namespace :sg_fargate_rails do
 
     desc 'List Delayed Cron Jobs'
     task list_delayed_cron_jobs: :environment do
-      SgFargateRails::DelayedCronJobUtility.list_cron_jobs
+      SgFargateRails::DelayedCronJobUtility.cron_jobs.order(id: :asc).each do |cron_job|
+        job_data = cron_job.payload_object.job_data
+        puts [
+          cron_job.cron,
+          "job_class : #{job_data['job_class']}",
+          "job_args  : #{job_data['arguments']}",
+          "queue     : #{cron_job.queue}",
+          "run_at    : #{cron_job.run_at.to_s}",
+          "created_at: #{cron_job.created_at.to_s}",
+        ].join("\n")
+        puts "\n"
+      end
     end
   end
 end
