@@ -8,6 +8,24 @@ module SgFargateRails
       def cron_jobs
         Delayed::Job.where.not(cron: nil)
       end
+
+      def list_cron_jobs
+        cron_jobs.order(id: :asc).map do |cron_job|
+          job_data = cron_job.payload_object.job_data
+          job_class = job_data['job_class']
+          job_arguments = job_data['arguments']
+
+          puts [
+            cron_job.cron,
+            "job_data  : #{job_class}",
+            "job_args  : #{job_arguments}",
+            "queue     : #{cron_job.queue}",
+            "run_at    : #{cron_job.run_at.to_s}",
+            "created_at: #{cron_job.created_at.to_s}",
+            "\n",
+          ].join("\n")
+        end
+      end
     end
 
     def initialize
