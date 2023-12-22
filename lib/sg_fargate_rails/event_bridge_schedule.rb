@@ -94,7 +94,7 @@ module SgFargateRails
 
     class << self
       def convert(schedules)
-        schedules.map { |name, info| EventBridgeSchedule.new(name.to_s, info[:cron], info[:command], info[:container_type]) }
+        schedules.to_h.map { |name, info| EventBridgeSchedule.new(name.to_s, info[:cron], info[:command], info[:container_type]) }
       end
 
       def delete_all!(group_name)
