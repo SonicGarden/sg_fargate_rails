@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# SFGEN (Sg Fargate rails GENerator wrapper)
+# ====================
+#
+# HOW TO USE
+# --------------------
+#
+# 各種ファイル生成を実施したい場合
+#
+#   sfgen
+#
+# sg_fargate_rails_generator のサブタスクを実行する場合
+#
+#   sfgen check
+#
+# これで bundle exec rails sg_fargate_rails_generator:check と同等となる。
+# check の部分は実行したいサブタスクの名前に置き換えること。
+
+localdir=`mktemp -d`
+git clone --quiet --depth 1 git@github.com:SonicGarden/sg_fargate_rails_generator.git "$localdir"
+bundle add sg_fargate_rails_generator --path "$localdir" --group development >/dev/null
+
+if [ x"$1" = x ]; then
+  bundle exec rails generate sg_fargate_rails_generator
+else
+  bundle exec rails sg_fargate_rails_generator:"$1"
+fi
+
+bundle remove sg_fargate_rails_generator >/dev/null
+rm -rf "$localdir"
