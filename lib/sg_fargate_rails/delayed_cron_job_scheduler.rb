@@ -35,7 +35,6 @@ module SgFargateRails
           job_class = options[:class]
           job_class = options[:class].constantize unless job_class.is_a?(Class)
 
-          # FIXME: queue_name は config で設定できるようにする
           args = options[:args]
           if args.blank?
             job_class.set(cron: options[:cron], queue: 'cron').perform_later
