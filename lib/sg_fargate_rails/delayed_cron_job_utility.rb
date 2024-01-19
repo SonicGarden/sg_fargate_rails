@@ -26,6 +26,7 @@ module SgFargateRails
       end
     end
 
+    # FIXME: refactor to DelayedCronJobScheduler
     def initialize
       unless defined?(::DelayedCronJob)
         raise 'DelayedCronJob not defined.'
@@ -55,13 +56,14 @@ module SgFargateRails
           job_class = options[:class]
           job_class = options[:class].constantize unless job_class.is_a?(Class)
 
+          # FIXME: queue_name は config で設定できるようにする
           args = options[:args]
           if args.blank?
-            job_class.set(cron: options[:cron]).perform_later
+            job_class.set(cron: options[:cron], queue: 'cron').perform_later
           elsif args.is_a?(Array)
-            job_class.set(cron: options[:cron]).perform_later(*args)
+            job_class.set(cron: options[:cron], queue: 'cron').perform_later(*args)
           elsif args.is_a?(Hash)
-            job_class.set(cron: options[:cron]).perform_later(**args)
+            job_class.set(cron: options[:cron], queue: 'cron').perform_later(**args)
           else
             raise 'invalid args option.'
           end
