@@ -24,6 +24,9 @@ module SgFargateRails
         end
 
         Blazer::Plus.blazer_danger_actionable_method ||= ->(blazer_user) { blazer_user.email.ends_with?('@sonicgarden.jp') }
+
+        # NOTE: すべての callback をすてているので致し方なく Blazer の用意している callback を利用する
+        Blazer.before_action = :authenticate_sg_system_administrator!
       end
 
       ActiveSupport.on_load(:good_job_application_controller) do
@@ -35,6 +38,35 @@ module SgFargateRails
           end
         end
       end
+
+      ActiveSupport.on_load(:action_controller_base) do
+        prepend_before_action :authenticate_sg_system_administrator!
+
+        def requires_sg_system_administrator?
+          # FIXME: module の検査方法は調査・修正する
+          return true if defined?(::Blazer) && self.class.to_s.include?('Blazer::')
+          return true if defined?(::GoodJob) && self.class.to_s.include?('GoodJob::')
+
+          false
+        end
+
+        def authenticate_sg_system_administrator!
+          return unless requires_sg_system_administrator?
+
+          if !sg_system_administrator_signed_in?
+            raise 'unauthorized system administrator.'
+          end
+        end
+      end
+
+      # TODO: sg_fargate_rails_generator で config/initializers/sg_fargate_rails.rb に以下のようなコードコメントを追加する
+      # ActiveSupport.on_load(:action_controller_base) do
+      #   def sg_system_administrator_signed_in?
+      #     # TODO: 各プロジェクトでアカウントの検証をしてください
+      #     # current_admin&.email&.end_with?('@sonicgarden.jp')
+      #     false
+      #   end
+      # end
     end
   end
 end
