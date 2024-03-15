@@ -6,6 +6,7 @@ module SgFargateRails
       'small' => { cpu: '512', memory: '1024', },
       'medium' => { cpu: '1024', memory: '2048', },
       'large' => { cpu: '2048', memory: '4096', },
+      'xlarge' => { cpu: '4096', memory: '8192', },
     }.freeze
 
     attr_reader :name
