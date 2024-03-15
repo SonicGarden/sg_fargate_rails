@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sg_fargate_rails (0.1.13)
+    sg_fargate_rails (0.1.14)
       aws-sdk-ec2 (~> 1.413)
       aws-sdk-scheduler (~> 1.10)
       lograge (~> 0.12)
