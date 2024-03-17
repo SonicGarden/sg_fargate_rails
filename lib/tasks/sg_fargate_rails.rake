@@ -31,6 +31,7 @@ namespace :sg_fargate_rails do
   end
 
   if defined?(::DelayedCronJob)
+    require 'sg_fargate_rails/delayed_cron_job_scheduler'
     require 'sg_fargate_rails/delayed_cron_job_utility'
 
     desc 'Refresh Delayed Cron Jobs'
