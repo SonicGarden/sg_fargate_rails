@@ -46,7 +46,7 @@ module SgFargateRails
           return unless defined?(::GoodJob)
           return unless self.class.module_parent == ::GoodJob
 
-          unless accessible_to_good_job?
+          unless try(:accessible_to_good_job?)
             raise 'unauthorized good_job user.'
           end
         end
@@ -55,7 +55,7 @@ module SgFargateRails
           return unless defined?(::Blazer)
           return unless self.class.module_parent == ::Blazer
 
-          unless accessible_to_blazer?
+          unless try(:accessible_to_blazer?)
             raise 'unauthorized blazer user.'
           end
         end
