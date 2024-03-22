@@ -24,6 +24,9 @@ module SgFargateRails
         end
 
         Blazer::Plus.blazer_danger_actionable_method ||= ->(blazer_user) { blazer_user.email.ends_with?('@sonicgarden.jp') }
+
+        # NOTE: すべての callback をすてているので致し方なく Blazer の用意している callback を利用する
+        Blazer.before_action = :authenticate_to_access_blazer!
       end
 
       ActiveSupport.on_load(:good_job_application_controller) do
@@ -32,6 +35,28 @@ module SgFargateRails
         def sg_fargate_rails_proxy_access!
           unless SgFargateRails.config.proxy_access?(request.remote_ip)
             render plain: 'Forbidden', status: :forbidden
+          end
+        end
+      end
+
+      ActiveSupport.on_load(:action_controller_base) do
+        prepend_before_action :authenticate_to_access_good_job!
+
+        def authenticate_to_access_good_job!
+          return unless defined?(::GoodJob)
+          return unless self.class.module_parent == ::GoodJob
+
+          unless try(:accessible_to_good_job?)
+            raise 'unauthorized good_job user.'
+          end
+        end
+
+        def authenticate_to_access_blazer!
+          return unless defined?(::Blazer)
+          return unless self.class.module_parent == ::Blazer
+
+          unless try(:accessible_to_blazer?)
+            raise 'unauthorized blazer user.'
           end
         end
       end
