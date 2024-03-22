@@ -60,21 +60,6 @@ module SgFargateRails
           end
         end
       end
-
-      # TODO: sg_fargate_rails_generator で config/initializers/sg_fargate_rails.rb に以下のようなコードコメントを追加する
-      # ActiveSupport.on_load(:action_controller_base) do
-      #   def accessible_to_good_job?
-      #     # TODO: 各プロジェクトでアカウントの検証をしてください
-      #     # current_admin&.email&.end_with?('@sonicgarden.jp')
-      #     false
-      #   end
-      #
-      #   def accessible_to_blazer?
-      #     # TODO: 各プロジェクトでアカウントの検証をしてください
-      #     # current_admin&.email&.end_with?('@sonicgarden.jp')
-      #     false
-      #   end
-      # end
     end
   end
 end
