@@ -51,7 +51,7 @@ describe SgFargateRails::EventBridgeSchedule do
   describe '.convert' do
     context 'scheduleの登録がない場合' do
       it do
-        expect(SgFargateRails::EventBridgeSchedule.convert({})).to eq []
+        expect(SgFargateRails::EventBridgeSchedule.convert(nil)).to eq []
       end
     end
 
