@@ -26,7 +26,7 @@ module SgFargateRails
         Blazer::Plus.blazer_danger_actionable_method ||= ->(blazer_user) { blazer_user.email.ends_with?('@sonicgarden.jp') }
 
         # NOTE: すべての callback をすてているので致し方なく Blazer の用意している callback を利用する
-        Blazer.before_action = :authenticate_user_to_access_blazer!
+        Blazer.before_action = :authenticate_to_access_blazer!
       end
 
       ActiveSupport.on_load(:good_job_application_controller) do
@@ -40,9 +40,9 @@ module SgFargateRails
       end
 
       ActiveSupport.on_load(:action_controller_base) do
-        prepend_before_action :authenticate_user_to_access_good_job!
+        prepend_before_action :authenticate_to_access_good_job!
 
-        def authenticate_user_to_access_good_job!
+        def authenticate_to_access_good_job!
           return unless defined?(::GoodJob)
           return unless self.class.module_parent == ::GoodJob
 
@@ -51,7 +51,7 @@ module SgFargateRails
           end
         end
 
-        def authenticate_user_to_access_blazer!
+        def authenticate_to_access_blazer!
           return unless defined?(::Blazer)
           return unless self.class.module_parent == ::Blazer
 
