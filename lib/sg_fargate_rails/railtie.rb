@@ -47,7 +47,7 @@ module SgFargateRails
           return unless defined?(::GoodJob)
           return unless self.class.module_parent == ::GoodJob
 
-          unless accessible_user_to_good_job?
+          unless accessible_to_good_job?
             raise 'unauthorized good_job user.'
           end
         end
@@ -56,7 +56,7 @@ module SgFargateRails
           return unless defined?(::Blazer)
           return unless self.class.module_parent == ::Blazer
 
-          unless accessible_user_to_blazer?
+          unless accessible_to_blazer?
             raise 'unauthorized blazer user.'
           end
         end
@@ -64,13 +64,13 @@ module SgFargateRails
 
       # TODO: sg_fargate_rails_generator で config/initializers/sg_fargate_rails.rb に以下のようなコードコメントを追加する
       # ActiveSupport.on_load(:action_controller_base) do
-      #   def accessible_user_to_good_job?
+      #   def accessible_to_good_job?
       #     # TODO: 各プロジェクトでアカウントの検証をしてください
       #     # current_admin&.email&.end_with?('@sonicgarden.jp')
       #     false
       #   end
       #
-      #   def accessible_user_to_blazer?
+      #   def accessible_to_blazer?
       #     # TODO: 各プロジェクトでアカウントの検証をしてください
       #     # current_admin&.email&.end_with?('@sonicgarden.jp')
       #     false
