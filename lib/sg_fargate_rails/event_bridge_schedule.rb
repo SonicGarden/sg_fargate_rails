@@ -3,10 +3,11 @@ require "aws-sdk-scheduler"
 module SgFargateRails
   class EventBridgeSchedule
     CONTAINER_TYPES = {
-      'small' => { cpu: '512', memory: '1024', },
-      'medium' => { cpu: '1024', memory: '2048', },
-      'large' => { cpu: '2048', memory: '4096', },
-      'xlarge' => { cpu: '4096', memory: '8192', },
+      'small' => { cpu: '512', memory: '1024' },
+      'medium' => { cpu: '1024', memory: '2048' },
+      'large' => { cpu: '2048', memory: '4096' },
+      'xlarge' => { cpu: '4096', memory: '8192' },
+      '2xlarge' => { cpu: '8192', memory: '16384' },
     }.freeze
 
     attr_reader :name
