@@ -56,12 +56,12 @@ module SgFargateRails
         schedule_expression_timezone: timezone,
         target: {
           arn: state_machine_arn,
-          input: input_overrides_json, # FIXME: このまま？
+          input: input_overrides_json,
           retry_policy: {
             maximum_event_age_in_seconds: 120,
             maximum_retry_attempts: 2,
           },
-          role_arn: role_arn_for(group_name, cluster_arn), # FIXME: IAM Role は同じものを利用できる？
+          role_arn: role_arn_for_state_machine(group_name, cluster_arn),
         },
       }
       client.create_schedule(params)
@@ -109,6 +109,11 @@ module SgFargateRails
     def role_arn_for(group_name, cluster_arn)
       account_id = cluster_arn.split(':')[4]
       "arn:aws:iam::#{account_id}:role/#{group_name}-eventbridge-scheduler-role"
+    end
+
+    def role_arn_for_state_machine(group_name, cluster_arn)
+      account_id = cluster_arn.split(':')[4]
+      "arn:aws:iam::#{account_id}:role/#{group_name}-step-functions-state-machine-role"
     end
 
     def client
