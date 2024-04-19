@@ -46,6 +46,27 @@ module SgFargateRails
       client.create_schedule(params)
     end
 
+    def create_start_execution_state_machine(group_name:, state_machine_arn:)
+      params = {
+        name: @name,
+        state: 'ENABLED',
+        flexible_time_window: { mode: 'OFF' },
+        group_name: group_name,
+        schedule_expression: @cron,
+        schedule_expression_timezone: timezone,
+        target: {
+          arn: state_machine_arn,
+          input: input_overrides_json, # FIXME: このまま？
+          retry_policy: {
+            maximum_event_age_in_seconds: 120,
+            maximum_retry_attempts: 2,
+          },
+          role_arn: role_arn_for(group_name, cluster_arn), # FIXME: IAM Role は同じものを利用できる？
+        },
+      }
+      client.create_schedule(params)
+    end
+
     def input_overrides_json
       type = convert_container_type
       if type
