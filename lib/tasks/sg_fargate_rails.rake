@@ -12,7 +12,7 @@ namespace :sg_fargate_rails do
     SgFargateRails::EventBridgeSchedule.delete_all!(group_name)
 
     if ecs_task.state_machine_arn.present?
-      Rails.logger.info "[EventBridgeSchedule] state machine exists."
+      Rails.logger.info "[EventBridgeSchedule] state machine exists, arn: #{ecs_task.state_machine_arn}."
     end
 
     Rails.logger.info "[EventBridgeSchedule] Register schedules in #{group_name}"
