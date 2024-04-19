@@ -120,7 +120,12 @@ module SgFargateRails
       self.class.client
     end
 
+    def region
+      ENV['AWS_REGION'] || 'ap-northeast-1'
+    end
+
     def state_machine_arn
+      # TODO: account_id はメソッドにする
       account_id = cluster_arn.split(':')[4]
       "arn:aws:states:#{region}:#{account_id}:stateMachine:#{group_name}-rails-state-machine"
     end
