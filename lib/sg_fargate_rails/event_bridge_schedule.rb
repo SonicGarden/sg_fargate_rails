@@ -46,7 +46,7 @@ module SgFargateRails
       client.create_schedule(params)
     end
 
-    def create_start_execution_state_machine(group_name:, state_machine_arn:)
+    def create_start_execution_state_machine(group_name:)
       params = {
         name: @name,
         state: 'ENABLED',
@@ -118,6 +118,11 @@ module SgFargateRails
 
     def client
       self.class.client
+    end
+
+    def state_machine_arn
+      account_id = cluster_arn.split(':')[4]
+      "arn:aws:states:#{region}:#{account_id}:stateMachine:#{group_name}-rails-state-machine"
     end
 
     class << self

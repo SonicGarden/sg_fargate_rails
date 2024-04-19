@@ -24,14 +24,6 @@ module SgFargateRails
       @public_subnet_ids ||= fetch_public_subnet_ids
     end
 
-    def state_machine_name
-      "#{ENV['COPILOT_APPLICATION_NAME']}-#{ENV['COPILOT_ENVIRONMENT_NAME']}-rails-state-machine"
-    end
-
-    def state_machine_arn
-      @state_machine_arn ||= fetch_state_machine_arn_by_name
-    end
-
     private
 
     def metadata
@@ -85,19 +77,6 @@ module SgFargateRails
       }
       resp = ec2_client.describe_subnets(subnet_params)
       resp.to_h[:subnets].map { |subnet| subnet[:subnet_id] }
-    end
-
-    def states_client
-      @states_client ||= Aws::States::Client.new(region: region, credentials: credentials)
-    end
-
-    def fetch_state_machine_arn_by_name
-      # state_machine
-      params = {
-        name: state_machine_name,
-      }
-      resp = states_client.describe_state_machine(params)
-      resp&.state_machine_arn
     end
   end
 end

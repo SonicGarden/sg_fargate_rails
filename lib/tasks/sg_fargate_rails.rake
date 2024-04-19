@@ -11,20 +11,13 @@ namespace :sg_fargate_rails do
     Rails.logger.info "[EventBridgeSchedule] Clear all schedules in #{group_name}"
     SgFargateRails::EventBridgeSchedule.delete_all!(group_name)
 
-    if ecs_task.state_machine_arn.present?
-      Rails.logger.info "[EventBridgeSchedule] state machine exists, arn: #{ecs_task.state_machine_arn}."
-    end
-
     Rails.logger.info "[EventBridgeSchedule] Register schedules in #{group_name}"
     SgFargateRails::EventBridgeSchedule.convert(Rails.application.config_for('eventbridge_schedules')).each do |schedule|
       Rails.logger.info "[EventBridgeSchedule] Register schedule #{schedule.name} in #{group_name}"
 
       # TODO: この辺で AWS の API Limit などのエラーが発生するとスケジュールが消えたままとなるので、エラーの内容に応じてリトライなどのエラー処理が必要
-      if ecs_task.state_machine_arn.present?
-        schedule.create_start_execution_state_machine(
-          group_name: group_name,
-          state_machine_arn: ecs_task.state_machine_arn
-        )
+      if true # FIXME: ここで Step Functions を使うかどうかを判定する
+        schedule.create_start_execution_state_machine(group_name: group_name)
       else
         schedule.create_run_task(
           group_name: group_name,
