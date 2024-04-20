@@ -46,7 +46,7 @@ module SgFargateRails
       client.create_schedule(params)
     end
 
-    def create_start_execution_state_machine(group_name:)
+    def create_start_execution_state_machine(group_name:, cluster_arn:)
       params = {
         name: @name,
         state: 'ENABLED',
@@ -55,7 +55,7 @@ module SgFargateRails
         schedule_expression: @cron,
         schedule_expression_timezone: timezone,
         target: {
-          arn: state_machine_arn,
+          arn: state_machine_arn(cluster_arn),
           input: input_overrides_json,
           retry_policy: {
             maximum_event_age_in_seconds: 120,
@@ -124,7 +124,7 @@ module SgFargateRails
       ENV['AWS_REGION'] || 'ap-northeast-1'
     end
 
-    def state_machine_arn
+    def state_machine_arn(cluster_arn)
       # TODO: account_id はメソッドにする
       account_id = cluster_arn.split(':')[4]
       "arn:aws:states:#{region}:#{account_id}:stateMachine:#{group_name}-rails-state-machine"

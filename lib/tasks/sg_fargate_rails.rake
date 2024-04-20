@@ -17,7 +17,7 @@ namespace :sg_fargate_rails do
 
       # TODO: この辺で AWS の API Limit などのエラーが発生するとスケジュールが消えたままとなるので、エラーの内容に応じてリトライなどのエラー処理が必要
       if true # FIXME: ここで Step Functions を使うかどうかを判定する
-        schedule.create_start_execution_state_machine(group_name: group_name)
+        schedule.create_start_execution_state_machine(group_name: group_name, cluster_arn: ecs_task.cluster_arn)
       else
         schedule.create_run_task(
           group_name: group_name,
