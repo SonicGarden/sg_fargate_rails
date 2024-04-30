@@ -5,12 +5,12 @@ describe SgFargateRails::EventBridgeSchedule do
   describe '.input_overrides_json' do
     let(:cron) { 'cron(30 16 * * ? *)' }
     let(:command) { 'jobmon --estimate-time=3000 stat' }
-    let(:schedule) { SgFargateRails::EventBridgeSchedule.new('name', cron, command, container_size, container_type) }
+    let(:schedule) { SgFargateRails::EventBridgeSchedule.new('name', cron, command, container_type, storage_size_gb) }
 
     subject { schedule.input_overrides_json }
 
     context 'container_typeが指定されている場合' do
-      let(:container_size) { 64 }
+      let(:storage_size_gb) { 64 }
       let(:container_type) { 'small' }
 
       it 'cpuやmemoryの情報が補完されること' do
@@ -33,7 +33,7 @@ describe SgFargateRails::EventBridgeSchedule do
     end
 
     context 'container_typeが指定されていない場合' do
-      let(:container_size) { nil }
+      let(:storage_size_gb) { nil }
       let(:container_type) { nil }
 
       it do
