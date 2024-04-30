@@ -11,19 +11,19 @@ describe SgFargateRails::EventBridgeSchedule do
 
     context 'container_typeが指定されている場合' do
       let(:storage_size_gb) { 64 }
-      let(:container_type) { 'small' }
+      let(:container_type) { 'medium' }
 
       it 'cpuやmemoryの情報が補完されること' do
         is_expected.to eq(
                          {
-                           "cpu": "512",
-                           "memory": "1024",
+                           "cpu": "1024",
+                           "memory": "2048",
                            "ephemeralStorage": { "sizeInGiB": 64 },
                            "containerOverrides": [
                              {
                                "name": "rails",
-                               "cpu": "512",
-                               "memory": "1024",
+                               "cpu": "1024",
+                               "memory": "2048",
                                "command": %w[bundle exec jobmon --estimate-time=3000 stat],
                              }
                            ]
@@ -39,10 +39,14 @@ describe SgFargateRails::EventBridgeSchedule do
       it do
         is_expected.to eq(
                          {
+                           "cpu": "512",
+                           "memory": "1024",
                            "ephemeralStorage": { "sizeInGiB": 20 },
                            "containerOverrides": [
                              {
                                "name": "rails",
+                               "cpu": "512",
+                               "memory": "1024",
                                "command": %w[bundle exec jobmon --estimate-time=3000 stat],
                              }
                            ]

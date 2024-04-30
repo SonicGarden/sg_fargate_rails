@@ -16,7 +16,7 @@ module SgFargateRails
       @name = name
       @cron = cron
       @command = command
-      @container_type = container_type
+      @container_type = container_type || 'small'
       @storage_size_gb = storage_size_gb || 20 # sizeInGiB
     end
 
@@ -49,29 +49,17 @@ module SgFargateRails
 
     def input_overrides_json
       type = convert_container_type
-      if type
-        {
-          **type,
-          "ephemeralStorage": { "sizeInGiB": @storage_size_gb },
-          "containerOverrides": [
-            {
-              "name": "rails",
-              **type,
-              "command": container_command,
-            }
-          ]
-        }.to_json
-      else
-        {
-          "ephemeralStorage": { "sizeInGiB": @storage_size_gb },
-          "containerOverrides": [
-            {
-              "name": "rails",
-              "command": container_command,
-            }
-          ]
-        }.to_json
-      end
+      {
+        **type,
+        "ephemeralStorage": { "sizeInGiB": @storage_size_gb },
+        "containerOverrides": [
+          {
+            "name": "rails",
+            **type,
+            "command": container_command,
+          }
+        ]
+      }.to_json
     end
 
     def convert_container_type
