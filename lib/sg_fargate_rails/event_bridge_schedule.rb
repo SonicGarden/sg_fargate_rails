@@ -12,10 +12,11 @@ module SgFargateRails
 
     attr_reader :name
 
-    def initialize(name, cron, command, container_type)
+    def initialize(name, cron, command, container_size, container_type)
       @name = name
       @cron = cron
       @command = command
+      @container_size = container_size || 20 # sizeInGiB
       @container_type = container_type
     end
 
@@ -51,6 +52,7 @@ module SgFargateRails
       if type
         {
           **type,
+          "ephemeralStorage": { "sizeInGiB": @container_size },
           "containerOverrides": [
             {
               "name": "rails",
@@ -61,6 +63,7 @@ module SgFargateRails
         }.to_json
       else
         {
+          "ephemeralStorage": { "sizeInGiB": @container_size },
           "containerOverrides": [
             {
               "name": "rails",
@@ -96,7 +99,7 @@ module SgFargateRails
 
     class << self
       def convert(schedules)
-        schedules.to_h.map { |name, info| EventBridgeSchedule.new(name.to_s, info[:cron], info[:command], info[:container_type]) }
+        schedules.to_h.map { |name, info| EventBridgeSchedule.new(name.to_s, info[:cron], info[:command], info[:container_size], info[:container_type]) }
       end
 
       def delete_all!(group_name)
