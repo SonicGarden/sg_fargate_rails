@@ -12,12 +12,13 @@ module SgFargateRails
 
     attr_reader :name
 
-    def initialize(name, cron, command, container_type, storage_size_gb)
+    def initialize(name, cron, command, container_type, storage_size_gb, without_bundle_exec: false)
       @name = name
       @cron = cron
       @command = command
       @container_type = container_type || 'small'
       @storage_size_gb = storage_size_gb # sizeInGiB
+      @without_bundle_exec = without_bundle_exec.presence
     end
 
     def create_run_task(group_name:, cluster_arn:, task_definition_arn:, network_configuration:)
@@ -72,7 +73,15 @@ module SgFargateRails
     end
 
     def container_command
-      %w[bundle exec] + @command.split(' ')
+      if without_bundle_exec?
+        @command.split(' ')
+      else
+        %w[bundle exec] + @command.split(' ')
+      end
+    end
+
+    def without_bundle_exec?
+      !!@without_bundle_exec
     end
 
     private
@@ -92,7 +101,12 @@ module SgFargateRails
 
     class << self
       def convert(schedules)
-        schedules.to_h.map { |name, info| EventBridgeSchedule.new(name.to_s, info[:cron], info[:command], info[:container_type], info[:storage_size_gb]) }
+        schedules.to_h.map { |name, info|
+          EventBridgeSchedule.new(
+            name.to_s, info[:cron], info[:command], info[:container_type], info[:storage_size_gb],
+            without_bundle_exec: info[:without_bundle_exec]
+          )
+        }
       end
 
       def delete_all!(group_name)
