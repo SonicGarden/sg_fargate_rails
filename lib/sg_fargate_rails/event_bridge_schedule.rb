@@ -18,7 +18,7 @@ module SgFargateRails
       @command = command
       @container_type = container_type || 'small'
       @storage_size_gb = storage_size_gb # sizeInGiB
-      @use_bundler = use_bundler.presence || true
+      @use_bundler = use_bundler
     end
 
     def create_run_task(group_name:, cluster_arn:, task_definition_arn:, network_configuration:)
