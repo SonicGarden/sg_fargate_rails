@@ -104,7 +104,7 @@ module SgFargateRails
         schedules.to_h.map { |name, info|
           EventBridgeSchedule.new(
             name.to_s, info[:cron], info[:command], info[:container_type], info[:storage_size_gb],
-            use_bundler: info[:use_bundler]
+            use_bundler: info[:use_bundler].nil? ? true : info[:use_bundler]
           )
         }
       end
