@@ -41,7 +41,6 @@ describe SgFargateRails::EventBridgeSchedule do
                          {
                            "cpu": "512",
                            "memory": "1024",
-                           "ephemeralStorage": { "sizeInGiB": 20 },
                            "containerOverrides": [
                              {
                                "name": "rails",

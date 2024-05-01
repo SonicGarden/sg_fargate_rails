@@ -17,7 +17,7 @@ module SgFargateRails
       @cron = cron
       @command = command
       @container_type = container_type || 'small'
-      @storage_size_gb = storage_size_gb || 20 # sizeInGiB
+      @storage_size_gb = storage_size_gb # sizeInGiB
     end
 
     def create_run_task(group_name:, cluster_arn:, task_definition_arn:, network_configuration:)
@@ -49,9 +49,10 @@ module SgFargateRails
 
     def input_overrides_json
       type = convert_container_type
+      size = convert_storage_size
       {
         **type,
-        "ephemeralStorage": { "sizeInGiB": @storage_size_gb },
+        **size,
         "containerOverrides": [
           {
             "name": "rails",
@@ -64,6 +65,10 @@ module SgFargateRails
 
     def convert_container_type
       CONTAINER_TYPES.fetch(@container_type)
+    end
+
+    def convert_storage_size
+      @storage_size_gb.present? ? { "ephemeralStorage": { "sizeInGiB": @storage_size_gb } } : {}
     end
 
     def container_command
