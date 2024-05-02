@@ -12,11 +12,11 @@ module SgFargateRails
 
     attr_reader :name
 
-    def initialize(name, cron, command, container_type, storage_size_gb, use_bundler: true)
+    def initialize(name:, cron:, command:, container_type: 'small', storage_size_gb: nil, use_bundler: true)
       @name = name
       @cron = cron
       @command = command
-      @container_type = container_type || 'small'
+      @container_type = container_type
       @storage_size_gb = storage_size_gb # sizeInGiB
       @use_bundler = use_bundler
     end
@@ -103,8 +103,8 @@ module SgFargateRails
       def convert(schedules)
         schedules.to_h.map { |name, info|
           EventBridgeSchedule.new(
-            name.to_s, info[:cron], info[:command], info[:container_type], info[:storage_size_gb],
-            use_bundler: info[:use_bundler].nil? ? true : info[:use_bundler]
+            name: name.to_s,
+            **info.slice(:cron, :command, :container_type, :storage_size_gb, :use_bundler)
           )
         }
       end
