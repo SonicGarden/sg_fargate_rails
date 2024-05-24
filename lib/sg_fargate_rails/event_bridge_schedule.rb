@@ -74,9 +74,9 @@ module SgFargateRails
 
     def container_command
       if use_bundler?
-        %w[bundle exec] + @command.split(' ')
+        %w[bundle exec] + splitted_command
       else
-        @command.split(' ')
+        splitted_command
       end
     end
 
@@ -97,6 +97,14 @@ module SgFargateRails
 
     def client
       self.class.client
+    end
+
+    def splitted_command
+      if @command.is_a?(Array)
+        @command
+      else
+        @command.split(' ')
+      end
     end
 
     class << self
