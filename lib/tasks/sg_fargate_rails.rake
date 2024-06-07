@@ -49,4 +49,11 @@ namespace :sg_fargate_rails do
       end
     end
   end
+
+  desc 'Migrate the database with handling ConcurrentMigrationError'
+  task db_migrate: :environment do
+    Rake::Task["db:migrate"].execute
+  rescue ActiveRecord::ConcurrentMigrationError
+    exit SgFargateRails::EXIT_CONCURRENT_MIGRATION_ERROR
+  end
 end
