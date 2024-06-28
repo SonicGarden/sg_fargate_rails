@@ -21,6 +21,7 @@ module SgFargateRails
       @use_bundler = use_bundler
     end
 
+    # TODO: 利用しなくなる (state machine に移行する) ので、このメソッドは削除する
     def create_run_task(group_name:, cluster_arn:, task_definition_arn:, network_configuration:)
       params = {
         name: @name,
