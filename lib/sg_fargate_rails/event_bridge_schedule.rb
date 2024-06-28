@@ -112,16 +112,16 @@ module SgFargateRails
       ENV['TZ'] || 'Asia/Tokyo'
     end
 
-    def account_id
+    def account_id(cluster_arn)
       cluster_arn.split(':')[4]
     end
 
     def role_arn_for(group_name, cluster_arn)
-      "arn:aws:iam::#{account_id}:role/#{group_name}-eventbridge-scheduler-role"
+      "arn:aws:iam::#{account_id(cluster_arn)}:role/#{group_name}-eventbridge-scheduler-role"
     end
 
     def role_arn_for_state_machine(group_name, cluster_arn)
-      "arn:aws:iam::#{account_id}:role/#{group_name}-step-functions-state-machine-role"
+      "arn:aws:iam::#{account_id(cluster_arn)}:role/#{group_name}-step-functions-state-machine-role"
     end
 
     def client
@@ -141,7 +141,7 @@ module SgFargateRails
     end
 
     def state_machine_arn(group_name, cluster_arn)
-      "arn:aws:states:#{region}:#{account_id}:stateMachine:#{group_name}-rails-state-machine"
+      "arn:aws:states:#{region}:#{account_id(cluster_arn)}:stateMachine:#{group_name}-rails-state-machine"
     end
 
     class << self
