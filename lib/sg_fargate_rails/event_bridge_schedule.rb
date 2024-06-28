@@ -21,6 +21,7 @@ module SgFargateRails
       @use_bundler = use_bundler
     end
 
+    # TODO: 利用しなくなる (state machine に移行する) ので、このメソッドは削除する
     def create_run_task(group_name:, cluster_arn:, task_definition_arn:, network_configuration:)
       params = {
         name: @name,
@@ -43,6 +44,27 @@ module SgFargateRails
             maximum_retry_attempts: 2,
           },
           role_arn: role_arn_for(group_name, cluster_arn),
+        },
+      }
+      client.create_schedule(params)
+    end
+
+    def create_start_execution_state_machine(group_name:, cluster_arn:)
+      params = {
+        name: @name,
+        state: 'ENABLED',
+        flexible_time_window: { mode: 'OFF' },
+        group_name: group_name,
+        schedule_expression: @cron,
+        schedule_expression_timezone: timezone,
+        target: {
+          arn: state_machine_arn(group_name, cluster_arn),
+          input: input_overrides_json,
+          retry_policy: {
+            maximum_event_age_in_seconds: 120,
+            maximum_retry_attempts: 2,
+          },
+          role_arn: role_arn_for_state_machine(group_name, cluster_arn),
         },
       }
       client.create_schedule(params)
@@ -90,9 +112,16 @@ module SgFargateRails
       ENV['TZ'] || 'Asia/Tokyo'
     end
 
+    def account_id(cluster_arn)
+      cluster_arn.split(':')[4]
+    end
+
     def role_arn_for(group_name, cluster_arn)
-      account_id = cluster_arn.split(':')[4]
-      "arn:aws:iam::#{account_id}:role/#{group_name}-eventbridge-scheduler-role"
+      "arn:aws:iam::#{account_id(cluster_arn)}:role/#{group_name}-eventbridge-scheduler-role"
+    end
+
+    def role_arn_for_state_machine(group_name, cluster_arn)
+      "arn:aws:iam::#{account_id(cluster_arn)}:role/#{group_name}-step-functions-state-machine-role"
     end
 
     def client
@@ -105,6 +134,14 @@ module SgFargateRails
       else
         @command.split(' ')
       end
+    end
+
+    def region
+      ENV['AWS_REGION'] || 'ap-northeast-1'
+    end
+
+    def state_machine_arn(group_name, cluster_arn)
+      "arn:aws:states:#{region}:#{account_id(cluster_arn)}:stateMachine:#{group_name}-rails-state-machine"
     end
 
     class << self
