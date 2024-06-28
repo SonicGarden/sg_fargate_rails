@@ -3,18 +3,22 @@ require "aws-sdk-scheduler"
 module SgFargateRails
   class EventBridgeSchedule
     CONTAINER_TYPES = {
-      'small' => { cpu: '512', memory: '1024', },
-      'medium' => { cpu: '1024', memory: '2048', },
-      'large' => { cpu: '2048', memory: '4096', },
+      'small' => { cpu: '512', memory: '1024' },
+      'medium' => { cpu: '1024', memory: '2048' },
+      'large' => { cpu: '2048', memory: '4096' },
+      'xlarge' => { cpu: '4096', memory: '8192' },
+      '2xlarge' => { cpu: '8192', memory: '16384' },
     }.freeze
 
     attr_reader :name
 
-    def initialize(name, cron, command, container_type)
+    def initialize(name:, cron:, command:, container_type: 'small', storage_size_gb: nil, use_bundler: true)
       @name = name
       @cron = cron
       @command = command
       @container_type = container_type
+      @storage_size_gb = storage_size_gb # sizeInGiB
+      @use_bundler = use_bundler
     end
 
     def create_run_task(group_name:, cluster_arn:, task_definition_arn:, network_configuration:)
@@ -46,35 +50,38 @@ module SgFargateRails
 
     def input_overrides_json
       type = convert_container_type
-      if type
-        {
-          **type,
-          "containerOverrides": [
-            {
-              "name": "rails",
-              **type,
-              "command": container_command,
-            }
-          ]
-        }.to_json
-      else
-        {
-          "containerOverrides": [
-            {
-              "name": "rails",
-              "command": container_command,
-            }
-          ]
-        }.to_json
-      end
+      size = convert_storage_size
+      {
+        **type,
+        **size,
+        "containerOverrides": [
+          {
+            "name": "rails",
+            **type,
+            "command": container_command,
+          }
+        ]
+      }.to_json
     end
 
     def convert_container_type
-      @container_type ? CONTAINER_TYPES.fetch(@container_type) : nil
+      CONTAINER_TYPES.fetch(@container_type)
+    end
+
+    def convert_storage_size
+      @storage_size_gb.present? ? { "ephemeralStorage": { "sizeInGiB": @storage_size_gb } } : {}
     end
 
     def container_command
-      %w[bundle exec] + @command.split(' ')
+      if use_bundler?
+        %w[bundle exec] + splitted_command
+      else
+        splitted_command
+      end
+    end
+
+    def use_bundler?
+      !!@use_bundler
     end
 
     private
@@ -92,9 +99,22 @@ module SgFargateRails
       self.class.client
     end
 
+    def splitted_command
+      if @command.is_a?(Array)
+        @command
+      else
+        @command.split(' ')
+      end
+    end
+
     class << self
       def convert(schedules)
-        schedules.map { |name, info| EventBridgeSchedule.new(name.to_s, info[:cron], info[:command], info[:container_type]) }
+        schedules.to_h.map { |name, info|
+          EventBridgeSchedule.new(
+            name: name.to_s,
+            **info.slice(:cron, :command, :container_type, :storage_size_gb, :use_bundler)
+          )
+        }
       end
 
       def delete_all!(group_name)
