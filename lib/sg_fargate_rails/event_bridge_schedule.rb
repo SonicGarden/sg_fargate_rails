@@ -111,13 +111,15 @@ module SgFargateRails
       ENV['TZ'] || 'Asia/Tokyo'
     end
 
+    def account_id
+      cluster_arn.split(':')[4]
+    end
+
     def role_arn_for(group_name, cluster_arn)
-      account_id = cluster_arn.split(':')[4]
       "arn:aws:iam::#{account_id}:role/#{group_name}-eventbridge-scheduler-role"
     end
 
     def role_arn_for_state_machine(group_name, cluster_arn)
-      account_id = cluster_arn.split(':')[4]
       "arn:aws:iam::#{account_id}:role/#{group_name}-step-functions-state-machine-role"
     end
 
@@ -138,8 +140,6 @@ module SgFargateRails
     end
 
     def state_machine_arn(group_name, cluster_arn)
-      # TODO: account_id はメソッドにする
-      account_id = cluster_arn.split(':')[4]
       "arn:aws:states:#{region}:#{account_id}:stateMachine:#{group_name}-rails-state-machine"
     end
 
