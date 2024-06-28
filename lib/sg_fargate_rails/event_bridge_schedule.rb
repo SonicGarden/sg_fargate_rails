@@ -59,7 +59,7 @@ module SgFargateRails
         schedule_expression_timezone: timezone,
         target: {
           arn: state_machine_arn(group_name, cluster_arn),
-          input: input_overrides_json,
+          input: input_overrides_json_for_state_machine,
           retry_policy: {
             maximum_event_age_in_seconds: 120,
             maximum_retry_attempts: 2,
@@ -83,6 +83,14 @@ module SgFargateRails
             "command": container_command,
           }
         ]
+      }.to_json
+    end
+
+    def input_overrides_json_for_state_machine
+      type = convert_container_type
+      {
+        **type,
+        "command": container_command,
       }.to_json
     end
 
