@@ -25,4 +25,25 @@ module SgFargateRails
       yield(config)
     end
   end
+
+  class DependencyChecker
+    class << self
+      def check!
+        if current_generator_version < Gem::Version.new('0.13.0')
+          raise 'sg_fargate_rails_generator のバージョンを 0.13.0 以上にあげてください'
+        end
+      end
+
+      def current_generator_version
+        file_path = Rails.root.join('.sg_fargate_rails_generator').freeze
+        version = File.exist?(file_path) ? File.read(file_path).strip : '0.0.0'
+        Gem::Version.new(version)
+      end
+    end
+  end
+end
+
+# FIXME: Rails の起動後にバージョンチェックされるようにしたいが、どうすればよいか？
+ActiveSupport.on_load(:active_record) do
+  SgFargateRails::DependencyChecker.check!
 end
