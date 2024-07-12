@@ -35,7 +35,7 @@ module SgFargateRails
       end
 
       def current_generator_version
-        file_path = Rails.root.join('.sg_fargate_rails_generator').freeze
+        file_path = Rails.root.join('.sg_fargate_rails_generator')
         version = file_path.exist? ? file_path.read.strip : '0.0.0'
         Gem::Version.new(version)
       end
