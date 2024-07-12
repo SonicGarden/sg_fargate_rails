@@ -57,12 +57,12 @@ namespace :sg_fargate_rails do
     exit SgFargateRails::EXIT_CONCURRENT_MIGRATION_ERROR
   end
 
-  desc 'Check dependencies'
-  task check: :environment do
-    SgFargateRails::DependencyChecker.check!
+  desc 'verify generator version'
+  task verify_generator_version: :environment do
+    SgFargateRails::GeneratorVerification.verify_version!
   end
 end
 
 if Rake::Task.task_defined?("assets:precompile")
-  Rake::Task["assets:precompile"].enhance(["sg_fargate_rails:check"])
+  Rake::Task["assets:precompile"].enhance(["sg_fargate_rails:verify_generator_version"])
 end

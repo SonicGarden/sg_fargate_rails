@@ -26,9 +26,9 @@ module SgFargateRails
     end
   end
 
-  class DependencyChecker
+  class GeneratorVerification
     class << self
-      def check!
+      def verify_version!
         if current_generator_version < Gem::Version.new('0.13.0')
           raise 'sg_fargate_rails_generator のバージョンを 0.13.0 以上にあげてください'
         end
