@@ -42,8 +42,3 @@ module SgFargateRails
     end
   end
 end
-
-# FIXME: Rails の起動後にバージョンチェックされるようにしたいが、どうすればよいか？
-ActiveSupport.on_load(:active_record) do
-  SgFargateRails::DependencyChecker.check!
-end

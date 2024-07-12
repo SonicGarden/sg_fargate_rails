@@ -56,4 +56,13 @@ namespace :sg_fargate_rails do
   rescue ActiveRecord::ConcurrentMigrationError
     exit SgFargateRails::EXIT_CONCURRENT_MIGRATION_ERROR
   end
+
+  desc 'Check dependencies'
+  task check: :environment do
+    SgFargateRails::DependencyChecker.check!
+  end
+end
+
+if Rake::Task.task_defined?("assets:precompile")
+  Rake::Task["assets:precompile"].enhance(["sg_fargate_rails:check"])
 end
