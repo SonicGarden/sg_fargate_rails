@@ -25,4 +25,20 @@ module SgFargateRails
       yield(config)
     end
   end
+
+  class GeneratorVerification
+    class << self
+      def verify_version!
+        if current_generator_version < Gem::Version.new('0.13.0')
+          raise 'sg_fargate_rails_generator のバージョンを 0.13.0 以上にあげてください'
+        end
+      end
+
+      def current_generator_version
+        file_path = Rails.root.join('.sg_fargate_rails_generator')
+        version = file_path.exist? ? file_path.read.strip : '0.0.0'
+        Gem::Version.new(version)
+      end
+    end
+  end
 end

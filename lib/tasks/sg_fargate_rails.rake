@@ -46,4 +46,13 @@ namespace :sg_fargate_rails do
   rescue ActiveRecord::ConcurrentMigrationError
     exit SgFargateRails::EXIT_CONCURRENT_MIGRATION_ERROR
   end
+
+  desc 'verify generator version'
+  task verify_generator_version: :environment do
+    SgFargateRails::GeneratorVerification.verify_version!
+  end
+end
+
+if Rake::Task.task_defined?("assets:precompile")
+  Rake::Task["assets:precompile"].enhance(["sg_fargate_rails:verify_generator_version"])
 end
