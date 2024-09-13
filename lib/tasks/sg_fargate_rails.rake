@@ -14,19 +14,24 @@ namespace :sg_fargate_rails do
     Rails.logger.info "[EventBridgeSchedule] Register schedules in #{group_name}"
     SgFargateRails::EventBridgeSchedule.convert(Rails.application.config_for('eventbridge_schedules')).each do |schedule|
       Rails.logger.info "[EventBridgeSchedule] Register schedule #{schedule.name} in #{group_name}"
+
       # TODO: この辺で AWS の API Limit などのエラーが発生するとスケジュールが消えたままとなるので、エラーの内容に応じてリトライなどのエラー処理が必要
-      schedule.create_run_task(
-        group_name: group_name,
-        cluster_arn: ecs_task.cluster_arn,
-        task_definition_arn: ecs_task.task_definition_arn,
-        network_configuration: {
-          awsvpc_configuration: {
-            assign_public_ip: 'ENABLED',
-            security_groups: ecs_task.security_group_ids,
-            subnets: ecs_task.public_subnet_ids,
-          },
-        }
-      )
+      if SgFargateRails.config.scheduled_state_machine_enabled
+        schedule.create_start_execution_state_machine(group_name: group_name, cluster_arn: ecs_task.cluster_arn)
+      else
+        schedule.create_run_task(
+          group_name: group_name,
+          cluster_arn: ecs_task.cluster_arn,
+          task_definition_arn: ecs_task.task_definition_arn,
+          network_configuration: {
+            awsvpc_configuration: {
+              assign_public_ip: 'ENABLED',
+              security_groups: ecs_task.security_group_ids,
+              subnets: ecs_task.public_subnet_ids,
+            },
+          }
+        )
+      end
     end
   end
 
@@ -56,4 +61,13 @@ namespace :sg_fargate_rails do
   rescue ActiveRecord::ConcurrentMigrationError
     exit SgFargateRails::EXIT_CONCURRENT_MIGRATION_ERROR
   end
+
+  desc 'verify generator version'
+  task verify_generator_version: :environment do
+    SgFargateRails::GeneratorVerification.verify_version!
+  end
+end
+
+if Rake::Task.task_defined?("assets:precompile")
+  Rake::Task["assets:precompile"].enhance(["sg_fargate_rails:verify_generator_version"])
 end
