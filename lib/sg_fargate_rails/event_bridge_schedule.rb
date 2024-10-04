@@ -10,6 +10,8 @@ module SgFargateRails
       '2xlarge' => { cpu: '8192', memory: '16384' },
     }.freeze
 
+    DEFAULT_STORAGE_SIZE_GB = 20
+
     attr_reader :name
 
     def initialize(name:, cron:, command:, container_type: 'small', storage_size_gb: nil, use_bundler: true)
@@ -59,7 +61,7 @@ module SgFargateRails
         schedule_expression_timezone: timezone,
         target: {
           arn: state_machine_arn(group_name, cluster_arn),
-          input: container_overrides_json,
+          input: state_machine_input_json,
           retry_policy: {
             maximum_event_age_in_seconds: 120,
             maximum_retry_attempts: 2,
@@ -86,10 +88,11 @@ module SgFargateRails
       }.to_json
     end
 
-    def container_overrides_json
+    def state_machine_input_json
       type = convert_container_type
       {
         **type,
+        "storage_size_gb": @storage_size_gb || DEFAULT_STORAGE_SIZE_GB,
         "command": container_command,
       }.to_json
     end
