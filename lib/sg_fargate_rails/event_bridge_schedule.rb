@@ -14,7 +14,7 @@ module SgFargateRails
 
     attr_reader :name
 
-    def initialize(name:, cron:, command:, container_type: 'small', storage_size_gb: DEFAULT_STORAGE_SIZE_GB, use_bundler: true)
+    def initialize(name:, cron:, command:, container_type: 'small', storage_size_gb: nil, use_bundler: true)
       @name = name
       @cron = cron
       @command = command
@@ -92,7 +92,7 @@ module SgFargateRails
       type = convert_container_type
       {
         **type,
-        "storage_size_gb": @storage_size_gb,
+        "storage_size_gb": @storage_size_gb || DEFAULT_STORAGE_SIZE_GB,
         "command": container_command,
       }.to_json
     end
