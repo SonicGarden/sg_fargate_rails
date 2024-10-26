@@ -10,7 +10,7 @@ module SgFargateRails
       '2xlarge' => { cpu: '8192', memory: '16384' },
     }.freeze
 
-    DEFAULT_STORAGE_SIZE_GB = 20
+    DEFAULT_STORAGE_SIZE_GB = 21
 
     attr_reader :name
 
