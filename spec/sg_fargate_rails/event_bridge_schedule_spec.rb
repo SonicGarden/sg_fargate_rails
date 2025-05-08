@@ -115,7 +115,7 @@ describe SgFargateRails::EventBridgeSchedule do
       end
     end
 
-    xcontext 'CFgen 環境の場合' do
+    context 'CFgen 環境の場合' do
       before do
         allow(ENV).to receive(:[]).and_call_original
         allow(ENV).to receive(:[]).with('CFGEN_ENABLED').and_return('true')

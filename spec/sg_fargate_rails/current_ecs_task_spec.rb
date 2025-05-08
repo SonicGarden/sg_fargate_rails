@@ -16,7 +16,7 @@ describe SgFargateRails::CurrentEcsTask do
       end
     end
 
-    xcontext 'CFgen 環境の場合' do
+    context 'CFgen 環境の場合' do
       before do
         allow(ENV).to receive(:[]).with('CFGEN_ENABLED').and_return('true')
       end
@@ -27,7 +27,7 @@ describe SgFargateRails::CurrentEcsTask do
     end
   end
 
-  xdescribe '#scheduler_group_name' do
+  describe '#scheduler_group_name' do
     context 'Copilot CLI 環境の場合' do
       it 'Schedulerグループが "test-project-staging" になること' do
         expect(ecs_task.scheduler_group_name).to eq 'test-project-staging'

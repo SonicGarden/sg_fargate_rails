@@ -7,7 +7,7 @@ namespace :sg_fargate_rails do
     Rails.logger.info "[INFO] security_group_ids: #{ecs_task.security_group_ids}"
     Rails.logger.info "[INFO] subnet_ids: #{ecs_task.public_subnet_ids}"
 
-    group_name = ecs_task.cfn_stack_name
+    group_name = ecs_task.scheduler_group_name
     Rails.logger.info "[EventBridgeSchedule] Clear all schedules in #{group_name}"
     SgFargateRails::EventBridgeSchedule.delete_all!(group_name)
 
