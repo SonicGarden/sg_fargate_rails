@@ -103,4 +103,28 @@ describe SgFargateRails::EventBridgeSchedule do
       end
     end
   end
+
+  describe '#state_machine_arn' do
+    let(:schedule) { SgFargateRails::EventBridgeSchedule.new(name: 'test-task-name', cron: 'cron(30 16 * * ? *)', command: ['rails', '-v']) }
+    let(:cluster_name) { 'arn:aws:ecs:ap-northeast-1:123456789012:cluster/test-Cluster' }
+
+    context 'Copilot CLI 環境の場合' do
+      it 'StateMachine名が "Scheduleグループ名-rails-state-machine" になること' do
+        expect(schedule.send(:state_machine_arn, 'test-group-name', cluster_name)).to eq \
+          'arn:aws:states:ap-northeast-1:123456789012:stateMachine:test-group-name-rails-state-machine'
+      end
+    end
+
+    xcontext 'CFgen 環境の場合' do
+      before do
+        allow(ENV).to receive(:[]).and_call_original
+        allow(ENV).to receive(:[]).with('CFGEN_ENABLED').and_return('true')
+      end
+
+      it 'StateMachine名が "Scheduleグループ名-web-state-machine" になること' do
+        expect(schedule.send(:state_machine_arn, 'test-group-name', cluster_name)).to eq \
+          'arn:aws:states:ap-northeast-1:123456789012:stateMachine:test-group-name-web-state-machine'
+      end
+    end
+  end
 end
