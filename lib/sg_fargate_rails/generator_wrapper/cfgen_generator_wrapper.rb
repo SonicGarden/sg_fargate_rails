@@ -24,12 +24,8 @@ module SgFargateRails
                    [
                      %w[bundle exec rails cf_fargate_rails_generator:check],
                    ]
-                 when 'app-gen'
-                   [
-                     %w[bundle exec rails generate cg_fargate_rails_generator],
-                   ]
                  else
-
+                   # Tulio 作業として、例えば "bundle exec cfgen update staging pipeline-env" などを実行する場合に使います
                    [
                      ['bundle', 'exec', 'cf_fargate_rails_generator', task, *argv],
                    ]
