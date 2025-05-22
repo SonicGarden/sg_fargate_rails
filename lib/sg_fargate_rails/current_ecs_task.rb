@@ -14,10 +14,10 @@ module SgFargateRails
 
     def cfn_stack_name
       if ENV['CFGEN_ENABLED'] == 'true'
-        prefix = 'cfgen-'
-        suffix = '-environments'
+        "cfgen-#{ENV['COPILOT_APPLICATION_NAME']}-#{ENV['COPILOT_ENVIRONMENT_NAME']}-environments"
+      else
+        "#{ENV['COPILOT_APPLICATION_NAME']}-#{ENV['COPILOT_ENVIRONMENT_NAME']}"
       end
-      "#{prefix}#{ENV['COPILOT_APPLICATION_NAME']}-#{ENV['COPILOT_ENVIRONMENT_NAME']}#{suffix}"
     end
 
     def scheduler_group_name

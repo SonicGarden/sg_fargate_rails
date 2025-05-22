@@ -23,7 +23,8 @@ module SgFargateRails
                      %w[bundle exec rails cf_fargate_rails_generator:check],
                    ]
                  else
-                   # Tulio 作業として、例えば "bundle exec cfgen update staging pipeline-env" などを実行する場合に使います
+                   # Tulio 作業として、AWS構築や構成変更を実施する際に使います
+                   # 例) パイプライン(service)更新: "bundle exec cfgen update staging pipeline-service"
                    [
                      ['bundle', 'exec', 'cf_fargate_rails_generator', *argv],
                    ]
