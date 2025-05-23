@@ -30,9 +30,11 @@ module SgFargateRails
                    ]
                  end
 
-
       commands.each do |command|
-        system(*command, in: :in)
+        unless system(*command, in: :in)
+          puts 'エラーが発生しました。中断します。'
+          break
+        end
       end
     end
   end
