@@ -1,6 +1,6 @@
 require 'tmpdir'
 
-require_relative "../generator_wrapper"
+require_relative "generator_wrapper"
 
 module SgFargateRails
   class SfgenGeneratorWrapper < GeneratorWrapper
