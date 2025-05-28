@@ -13,7 +13,10 @@ namespace :sg_fargate_rails do
 
     fname = (ENV['CFGEN_ENABLED'] == 'true') ? 'cf_fargate_rails_generator.yml' : 'sg_fargate_rails_generator.yml'
     generator_setting = YAML.safe_load_file(Rails.root.join(fname))
-    return if generator_setting.dig(ENV['RAILS_ENV'], 'disable_cron')
+    if generator_setting.dig(ENV['RAILS_ENV'], 'disable_cron')
+      Rails.logger.info "[EventBridgeSchedule] As the disable option was specified, no schedule was configured in #{group_name}"
+      return
+    end
 
     Rails.logger.info "[EventBridgeSchedule] Register schedules in #{group_name}"
     SgFargateRails::EventBridgeSchedule.convert(Rails.application.config_for('eventbridge_schedules')).each do |schedule|
