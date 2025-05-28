@@ -15,7 +15,7 @@ namespace :sg_fargate_rails do
     generator_setting = YAML.safe_load_file(Rails.root.join(fname))
     if generator_setting.dig(ENV['RAILS_ENV'], 'disable_cron')
       Rails.logger.info "[EventBridgeSchedule] As the disable option was specified, no schedule was configured in #{group_name}"
-      return
+      next
     end
 
     Rails.logger.info "[EventBridgeSchedule] Register schedules in #{group_name}"
