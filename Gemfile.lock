@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sg_fargate_rails (0.2.3)
+    sg_fargate_rails (0.2.4)
       aws-sdk-ec2 (~> 1.413)
       aws-sdk-scheduler (~> 1.10)
       lograge (~> 0.12)
@@ -140,6 +140,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-22
+  arm64-darwin-24
   x86_64-linux
 
 DEPENDENCIES

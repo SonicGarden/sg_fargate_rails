@@ -75,6 +75,7 @@ namespace :sg_fargate_rails do
   end
 end
 
-if Rake::Task.task_defined?("assets:precompile")
-  Rake::Task["assets:precompile"].enhance(["sg_fargate_rails:verify_generator_version"])
-end
+# NOTE: sg_fargate_rails_generatorのバージョンに依存する変更がないためコメントアウト
+# if Rake::Task.task_defined?("assets:precompile")
+#   Rake::Task["assets:precompile"].enhance(["sg_fargate_rails:verify_generator_version"])
+# end
