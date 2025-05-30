@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
-require_relative "../lib/sg_fargate_rails/generator_wrapper"
+require_relative "../lib/sg_fargate_rails/sfgen_generator_wrapper"
 
-SgFargateRails::GeneratorWrapper.run(ARGV)
+SgFargateRails::SfgenGeneratorWrapper.run(ARGV)

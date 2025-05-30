@@ -152,7 +152,8 @@ module SgFargateRails
     end
 
     def state_machine_arn(group_name, cluster_arn)
-      "arn:aws:states:#{region}:#{account_id(cluster_arn)}:stateMachine:#{group_name}-rails-state-machine"
+      container_name = (ENV['CFGEN_ENABLED'] == 'true') ? 'web' : 'rails'
+      "arn:aws:states:#{region}:#{account_id(cluster_arn)}:stateMachine:#{group_name}-#{container_name}-state-machine"
     end
 
     class << self
