@@ -1,6 +1,10 @@
 namespace :sg_fargate_rails do
   require 'sg_fargate_rails'
 
+  desc 'Post deployment'
+  task post_deployment: :environment do
+  end
+
   desc 'EventBridge Schedules'
   task recreate_schedules: :environment do
     ecs_task = SgFargateRails::CurrentEcsTask.new
