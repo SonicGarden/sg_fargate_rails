@@ -23,7 +23,9 @@ namespace :sg_fargate_rails do
       Rails.logger.info "[EventBridgeSchedule] Register schedule #{schedule.name} in #{group_name}"
 
       # TODO: この辺で AWS の API Limit などのエラーが発生するとスケジュールが消えたままとなるので、エラーの内容に応じてリトライなどのエラー処理が必要
+      # cfgen 環境では CodeBuild から recreate_schedules タスクを呼び出すところでリトライが実装されている
       if SgFargateRails.config.scheduled_state_machine_enabled
+        # cfgen 環境ではこの方式のみになっている
         schedule.create_start_execution_state_machine(group_name: group_name, cluster_arn: ecs_task.cluster_arn)
       else
         schedule.create_run_task(

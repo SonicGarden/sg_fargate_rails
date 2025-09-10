@@ -127,4 +127,56 @@ describe SgFargateRails::EventBridgeSchedule do
       end
     end
   end
+
+  describe '#role_arn_for_state_machine' do
+    let(:schedule) { SgFargateRails::EventBridgeSchedule.new(name: 'test-task-name', cron: 'cron(30 16 * * ? *)', command: ['rails', '-v']) }
+    let(:cluster_name) { 'arn:aws:ecs:ap-northeast-1:123456789012:cluster/test-Cluster' }
+
+    context 'Copilot CLI 環境で Scheduler のグループ名が "project-name-staging" の場合' do
+      before do
+        allow(ENV).to receive(:[]).and_call_original
+        allow(ENV).to receive(:[]).with('COPILOT_APPLICATION_NAME').and_return('project-name')
+        allow(ENV).to receive(:[]).with('COPILOT_ENVIRONMENT_NAME').and_return('staging')
+      end
+
+      let(:group_name) { 'project-name-staging' }
+
+      it 'StateMachineのロール名が "project-name-staging-step-functions-state-machine-role" になること' do
+        expect(schedule.send(:role_arn_for_state_machine, group_name, cluster_name)).to eq \
+          'arn:aws:iam::123456789012:role/project-name-staging-step-functions-state-machine-role'
+      end
+    end
+
+    context 'CFgen 環境で Scheduler のグループ名が "cfgen-project-name-staging" の場合' do
+      before do
+        allow(ENV).to receive(:[]).and_call_original
+        allow(ENV).to receive(:[]).with('CFGEN_ENABLED').and_return('true')
+        allow(ENV).to receive(:[]).with('COPILOT_APPLICATION_NAME').and_return('project-name')
+        allow(ENV).to receive(:[]).with('COPILOT_ENVIRONMENT_NAME').and_return('staging')
+      end
+
+      let(:group_name) { 'cfgen-project-name-staging' }
+
+      it 'StateMachineのロール名が "cfgen-project-name-staging-step-functions-state-machine-role" になること' do
+        expect(schedule.send(:role_arn_for_state_machine, group_name, cluster_name)).to eq \
+          'arn:aws:iam::123456789012:role/cfgen-project-name-staging-step-functions-state-machine-role'
+      end
+    end
+
+    context 'CFgen 環境で Scheduler のグループ名が "cfgen-long-project-name-production" と長く、ロール名の制限(64文字)を超える場合' do
+      before do
+        allow(ENV).to receive(:[]).and_call_original
+        allow(ENV).to receive(:[]).with('CFGEN_ENABLED').and_return('true')
+        allow(ENV).to receive(:[]).with('COPILOT_APPLICATION_NAME').and_return('long-project-name')
+        allow(ENV).to receive(:[]).with('COPILOT_ENVIRONMENT_NAME').and_return('production')
+      end
+
+      let(:group_name) { 'cfgen-long-project-name-production' }
+
+      it 'StateMachineのロール名が、app_nameが15文字で切り詰められて環境名が短縮名になって "cfgen-long-project-na-prod-step-functions-state-machine-role" になること' do
+        expect(schedule.send(:role_arn_for_state_machine, group_name, cluster_name)).to eq \
+          'arn:aws:iam::123456789012:role/cfgen-long-project-na-prod-step-functions-state-machine-role'
+      end
+    end
+  end
 end
