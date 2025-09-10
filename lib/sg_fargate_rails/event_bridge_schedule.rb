@@ -11,6 +11,7 @@ module SgFargateRails
     }.freeze
 
     DEFAULT_STORAGE_SIZE_GB = 21
+    ROLE_NAME_MAX_LENGTH = 64 # AWS IAM の仕様による制限
 
     attr_reader :name
 
@@ -127,12 +128,36 @@ module SgFargateRails
       cluster_arn.split(':')[4]
     end
 
+    # TODO: 利用しなくなる (state machine に移行する) ので、 create_run_task 同様に、このメソッドは削除する
     def role_arn_for(group_name, cluster_arn)
       "arn:aws:iam::#{account_id(cluster_arn)}:role/#{group_name}-eventbridge-scheduler-role"
     end
 
     def role_arn_for_state_machine(group_name, cluster_arn)
-      "arn:aws:iam::#{account_id(cluster_arn)}:role/#{group_name}-step-functions-state-machine-role"
+      "arn:aws:iam::#{account_id(cluster_arn)}:role/#{role_name(group_name, 'step-functions-state-machine-role')}"
+    end
+
+    def role_name(group_name, suffix)
+      name = "#{group_name}-#{suffix}"
+      return name unless ENV['CFGEN_ENABLED'] == 'true'
+
+      # AWSの仕様により、64文字を超える場合は短縮形にする
+      (name.length > ROLE_NAME_MAX_LENGTH) ? shortened_role_name(suffix) : name
+    end
+
+    # NOTE: CFgen で作成するロール名の短縮形に合わせる
+    # https://github.com/SonicGarden/cf_fargate_rails_generator/blob/4ef5e76e8df5c9984e89603d2be411ac5ee202f5/lib/cf_fargate_rails_generator/render/base.rb#L76-L82
+    def shortened_role_name(suffix)
+      shortened_application_name = ENV['COPILOT_APPLICATION_NAME'][0...15] # 15文字に切り詰める
+      shortened_environment_name = case ENV['COPILOT_ENVIRONMENT_NAME']
+                                   when 'production'
+                                     'prod'
+                                   when 'staging'
+                                     'stg'
+                                   else
+                                     ENV['COPILOT_ENVIRONMENT_NAME']
+                                   end
+      "cfgen-#{shortened_application_name}-#{shortened_environment_name}-#{suffix}"
     end
 
     def client
