@@ -18,6 +18,8 @@ module SgFargateRails
         app.config.middleware.insert_after SgFargateRails::RemoteIp, SgFargateRails::Maintenance
       end
 
+      app.config.middleware.use Rack::ContentLength if ENV['CLOUD_FRONT_COMPRESS_ENABLED'] == 'true'
+
       if defined?(::Blazer)
         unless defined?(::Blazer::Plus)
           raise SgFargateRails::Error, 'Please install blazer-plus gem.'
