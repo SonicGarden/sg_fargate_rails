@@ -70,7 +70,7 @@ namespace :sg_fargate_rails do
 
     begin
       Rake::Task["db:migrate"].execute
-    rescue ActiveRecord::ConcurrentMcdigrationError
+    rescue ActiveRecord::ConcurrentMigrationError 
       retries += 1
       exit SgFargateRails::EXIT_CONCURRENT_MIGRATION_ERROR if retries >= 10
 
