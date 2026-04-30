@@ -66,9 +66,18 @@ namespace :sg_fargate_rails do
 
   desc 'Migrate the database with handling ConcurrentMigrationError'
   task db_migrate: :environment do
-    Rake::Task["db:migrate"].execute
-  rescue ActiveRecord::ConcurrentMigrationError
-    exit SgFargateRails::EXIT_CONCURRENT_MIGRATION_ERROR
+    retries = 0
+
+    begin
+      Rake::Task["db:migrate"].execute
+    rescue ActiveRecord::ConcurrentMigrationError 
+      retries += 1
+      exit SgFargateRails::EXIT_CONCURRENT_MIGRATION_ERROR if retries >= 10
+
+      sleep rand(5.0..10.0)
+      puts "db_migrate retries: #{retries}"
+      retry
+    end
   end
 
   desc 'verify generator version'
