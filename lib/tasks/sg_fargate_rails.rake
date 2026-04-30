@@ -74,7 +74,7 @@ namespace :sg_fargate_rails do
       retries += 1
       exit SgFargateRails::EXIT_CONCURRENT_MIGRATION_ERROR if retries >= 10
 
-      sleep rand(5..10)
+      sleep rand(5.0..10.0)
       puts "db_migrate retries: #{retries}"
       retry
     end
